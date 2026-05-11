@@ -41,13 +41,13 @@
 
   /* ── HEADER ── */
   header {
-    background: var(--ink);
+    background: var(--white); border-bottom: 2px solid var(--border);
     padding: 28px 40px;
     display: flex;
     align-items: center;
     gap: 20px;
     position: sticky; top: 0; z-index: 100;
-    box-shadow: 0 2px 20px rgba(0,0,0,.35);
+    box-shadow: 0 2px 12px rgba(0,0,0,.08);
   }
   .logo-heart {
     width: 46px; height: 46px;
@@ -65,14 +65,14 @@
     font-family: var(--font-h);
     font-size: 1.55rem;
     font-weight: 300;
-    color: var(--white);
+    color: var(--ink);
     letter-spacing: .03em;
   }
   header h1 span { color: var(--gold); font-style: italic; }
   .header-sub {
     margin-left: auto;
     font-size: .78rem;
-    color: var(--ink-lt);
+    color: var(--ink-mid);
     text-align: right;
     line-height: 1.5;
   }
@@ -970,7 +970,7 @@
     <div class="order-badge" id="successOrderNum"></div>
     <div class="success-sub">El pedido fue guardado exitosamente en el sistema.<br>Puedes imprimir la orden o registrar un nuevo pedido.</div>
     <div class="btn-row" style="justify-content:center; margin-top:28px;">
-      <button class="btn-print" onclick="window.print()">🖨 Imprimir</button>
+      
       <button class="btn btn-primary" onclick="nuevoPedido()">+ Nuevo Pedido</button>
     </div>
   </div>
