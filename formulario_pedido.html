@@ -1188,7 +1188,7 @@ async function buscarTercero() {
       $('c_apellidos').value = t.apellidos || '';
       $('c_celular').value   = t.celular || '';
       $('c_correo').value    = t.correo || '';
-      [$('c_nombres'),$('c_apellidos'),$('c_celular'),$('c_correo')].forEach(el => el.setAttribute('readonly',''));
+      
       mostrarStatus('found','✓','¡Encontrado! Tus datos fueron cargados automáticamente.');
       state.esNuevo = false;
       state.terceroId = t.id || null;
