@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pedido — Fundación Santiago Corazón</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  /* ── CONFIG ── Cambia solo esta URL cuando publiques el Apps Script */
+  :root {
+    --script-url: 'https://script.google.com/macros/s/AKfycbzPgtB7oLs_ql0vxXhw9PPmiznlsXEdZpBDTFAQXwHQaLMtT-ajplzOPh9MGQvR3DUX/exec';
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream:   #f9f5ef;
+    --ivory:   #f2ece1;
+    --red:     #b5192b;
+    --red-dk:  #8a1120;
+    --red-lt:  #f5e8ea;
+    --gold:    #c4933f;
+    --ink:     #1a1209;
+    --ink-mid: #4a3f35;
+    --ink-lt:  #8a7d72;
+    --border:  #ddd3c4;
+    --white:   #ffffff;
+    --shadow:  0 2px 16px rgba(26,18,9,.08);
+    --radius:  10px;
+    --font-h:  'Cormorant Garamond', Georgia, serif;
+    --font-b:  'DM Sans', sans-serif;
+  }
+
+  body {
+    background: var(--cream);
+    font-family: var(--font-b);
+    color: var(--ink);
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--ink);
+    padding: 28px 40px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 20px rgba(0,0,0,.35);
+  }
+  .logo-heart {
+    width: 46px; height: 46px;
+    background: var(--red);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+    animation: pulse 2.8s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { transform: scale(1); }
+    50%      { transform: scale(1.06); }
+  }
+  header h1 {
+    font-family: var(--font-h);
+    font-size: 1.55rem;
+    font-weight: 300;
+    color: var(--white);
+    letter-spacing: .03em;
+  }
+  header h1 span { color: var(--gold); font-style: italic; }
+  .header-sub {
+    margin-left: auto;
+    font-size: .78rem;
+    color: var(--ink-lt);
+    text-align: right;
+    line-height: 1.5;
+  }
+
+  /* ── STEPPER ── */
+  .stepper {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    padding: 28px 40px 0;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  .step-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    cursor: default;
+  }
+  .step-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 16px; left: 50%;
+    width: 100%; height: 2px;
+    background: var(--border);
+    z-index: 0;
+  }
+  .step-item.done:not(:last-child)::after { background: var(--red); }
+  .step-dot {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    font-size: .75rem; font-weight: 500;
+    color: var(--ink-lt);
+    position: relative; z-index: 1;
+    transition: all .3s;
+  }
+  .step-item.active .step-dot {
+    border-color: var(--red);
+    background: var(--red);
+    color: var(--white);
+  }
+  .step-item.done .step-dot {
+    border-color: var(--red);
+    background: var(--red);
+    color: var(--white);
+  }
+  .step-label {
+    font-size: .68rem;
+    color: var(--ink-lt);
+    margin-top: 6px;
+    text-align: center;
+    font-weight: 500;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+  .step-item.active .step-label { color: var(--red); }
+  .step-item.done .step-label   { color: var(--ink-mid); }
+
+  /* ── CONTAINER ── */
+  .container { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+
+  /* ── SECTIONS ── */
+  .section {
+    display: none;
+    animation: fadeUp .35s ease both;
+  }
+  .section.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity:0; transform: translateY(14px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+
+  .section-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 36px 40px;
+    margin-top: 28px;
+  }
+  .section-title {
+    font-family: var(--font-h);
+    font-size: 1.75rem;
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+  .section-title em { color: var(--red); font-style: italic; }
+  .section-sub {
+    font-size: .83rem;
+    color: var(--ink-lt);
+    margin-bottom: 28px;
+    line-height: 1.6;
+  }
+
+  /* ── CEDULA SEARCH ── */
+  .cedula-wrap {
+    display: flex; gap: 12px; align-items: flex-end;
+    margin-bottom: 20px;
+  }
+  .cedula-wrap .field { flex: 1; margin-bottom: 0; }
+
+  .search-status {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: .83rem;
+    margin-bottom: 20px;
+    display: none;
+    align-items: center;
+    gap: 10px;
+  }
+  .search-status.found {
+    background: #e8f5e9; border: 1px solid #a5d6a7;
+    color: #2e7d32; display: flex;
+  }
+  .search-status.not-found {
+    background: #fff8e1; border: 1px solid #ffe082;
+    color: #f57f17; display: flex;
+  }
+  .search-status .status-icon { font-size: 1.1rem; }
+
+  /* ── FORM GRID ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .col-full { grid-column: 1 / -1; }
+
+  .field {
+    display: flex; flex-direction: column; gap: 5px;
+    margin-bottom: 16px;
+  }
+  .field:last-child { margin-bottom: 0; }
+
+  label {
+    font-size: .76rem;
+    font-weight: 500;
+    color: var(--ink-mid);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+  label .req { color: var(--red); margin-left: 2px; }
+
+  input[type=text], input[type=tel], input[type=email],
+  input[type=number], select, textarea {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    font-family: var(--font-b);
+    font-size: .9rem;
+    color: var(--ink);
+    background: var(--cream);
+    transition: border-color .2s, box-shadow .2s, background .2s;
+    outline: none;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--red);
+    background: var(--white);
+    box-shadow: 0 0 0 3px rgba(181,25,43,.08);
+  }
+  input[readonly] {
+    background: var(--ivory);
+    color: var(--ink-mid);
+    cursor: default;
+  }
+  textarea { resize: vertical; min-height: 90px; }
+  select { cursor: pointer; }
+
+  /* ── DIVIDER ── */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 28px 0;
+  }
+  .subsection-title {
+    font-family: var(--font-h);
+    font-size: 1.1rem;
+    color: var(--red);
+    font-style: italic;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  /* ── OCASION BADGE ── */
+  .ocasion-select { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .ocasion-btn {
+    padding: 7px 16px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: var(--white);
+    font-family: var(--font-b);
+    font-size: .8rem;
+    cursor: pointer;
+    color: var(--ink-mid);
+    transition: all .2s;
+    font-weight: 500;
+  }
+  .ocasion-btn:hover { border-color: var(--red); color: var(--red); }
+  .ocasion-btn.selected {
+    background: var(--red);
+    border-color: var(--red);
+    color: var(--white);
+  }
+
+  /* ── PRODUCTOS ── */
+  .cat-tabs {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;
+  }
+  .cat-tab {
+    padding: 7px 18px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: var(--white);
+    font-size: .8rem; font-weight: 500;
+    cursor: pointer; color: var(--ink-mid);
+    transition: all .2s;
+  }
+  .cat-tab.active { background: var(--ink); border-color: var(--ink); color: var(--white); }
+  .cat-tab:hover:not(.active) { border-color: var(--ink); }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 14px;
+    max-height: 440px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  .products-grid::-webkit-scrollbar { width: 5px; }
+  .products-grid::-webkit-scrollbar-track { background: var(--ivory); border-radius: 3px; }
+  .products-grid::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  .prod-card {
+    border: 1.5px solid var(--border);
+    border-radius: 9px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all .2s;
+    background: var(--white);
+    position: relative;
+  }
+  .prod-card:hover { border-color: var(--red); box-shadow: 0 2px 10px rgba(181,25,43,.1); }
+  .prod-card.selected { border-color: var(--red); background: var(--red-lt); }
+  .prod-card.selected::before {
+    content: '✓';
+    position: absolute; top: 8px; right: 10px;
+    width: 20px; height: 20px;
+    background: var(--red);
+    color: white;
+    border-radius: 50%;
+    font-size: .65rem;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .prod-cat-label {
+    font-size: .65rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--ink-lt);
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+  .prod-name { font-size: .88rem; font-weight: 500; color: var(--ink); margin-bottom: 6px; line-height: 1.3; }
+  .prod-price { font-size: 1rem; color: var(--red); font-weight: 500; font-family: var(--font-h); }
+
+  /* ── CARRITO ── */
+  .cart-section {
+    margin-top: 24px;
+    border: 1.5px solid var(--border);
+    border-radius: 9px;
+    overflow: hidden;
+  }
+  .cart-header {
+    background: var(--ivory);
+    padding: 12px 18px;
+    font-size: .78rem;
+    font-weight: 500;
+    color: var(--ink-mid);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    display: grid;
+    grid-template-columns: 1fr 90px 80px 34px;
+    gap: 10px;
+    align-items: center;
+  }
+  .cart-item {
+    padding: 12px 18px;
+    display: grid;
+    grid-template-columns: 1fr 90px 80px 34px;
+    gap: 10px;
+    align-items: center;
+    border-top: 1px solid var(--border);
+    font-size: .87rem;
+  }
+  .cart-item .item-name { color: var(--ink); font-weight: 500; line-height: 1.3; }
+  .cart-item .item-sub  { font-size: .73rem; color: var(--ink-lt); margin-top: 2px; }
+  .qty-input {
+    width: 70px !important;
+    text-align: center;
+    padding: 6px 8px !important;
+    margin-bottom: 0 !important;
+  }
+  .item-total { font-weight: 600; color: var(--ink); font-family: var(--font-h); font-size: .95rem; }
+  .remove-btn {
+    width: 28px; height: 28px;
+    border: none; background: none;
+    cursor: pointer; color: var(--ink-lt);
+    border-radius: 50%;
+    font-size: .85rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .2s;
+  }
+  .remove-btn:hover { background: var(--red-lt); color: var(--red); }
+  .cart-empty {
+    padding: 28px;
+    text-align: center;
+    color: var(--ink-lt);
+    font-size: .85rem;
+    font-style: italic;
+  }
+
+  /* ── ENVIO ── */
+  .envio-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .envio-card {
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all .2s;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    background: var(--white);
+  }
+  .envio-card:hover { border-color: var(--gold); }
+  .envio-card.selected { border-color: var(--red); background: var(--red-lt); }
+  .envio-label { font-size: .85rem; color: var(--ink); font-weight: 500; line-height: 1.4; }
+  .envio-sub   { font-size: .72rem; color: var(--ink-lt); margin-top: 2px; }
+  .envio-price {
+    font-family: var(--font-h);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--red);
+    white-space: nowrap;
+  }
+  .envio-price.free { color: #2e7d32; }
+
+  /* ── TOTALES ── */
+  .totals-box {
+    background: var(--ivory);
+    border-radius: 9px;
+    padding: 20px 24px;
+    margin-top: 20px;
+  }
+  .total-row {
+    display: flex; justify-content: space-between;
+    font-size: .87rem; color: var(--ink-mid);
+    padding: 5px 0;
+  }
+  .total-row.grand {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--ink);
+    font-family: var(--font-h);
+    border-top: 1.5px solid var(--border);
+    padding-top: 12px;
+    margin-top: 6px;
+  }
+
+  /* ── RESUMEN / ORDEN ── */
+  .orden-print {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 36px 40px;
+    margin-top: 20px;
+  }
+  .orden-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--border);
+  }
+  .orden-logo { font-family: var(--font-h); font-size: 1.5rem; color: var(--red); }
+  .orden-logo small { display: block; font-size: .75rem; color: var(--ink-lt); font-family: var(--font-b); font-style: normal; margin-top: 2px; }
+  .orden-num { text-align: right; font-size: .83rem; color: var(--ink-mid); }
+  .orden-num strong { display: block; font-size: 1.1rem; color: var(--ink); font-family: var(--font-h); }
+
+  .orden-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+  .orden-block h4 {
+    font-size: .7rem; text-transform: uppercase; letter-spacing: .08em;
+    color: var(--red); margin-bottom: 10px; font-weight: 600;
+  }
+  .orden-block p { font-size: .84rem; color: var(--ink-mid); line-height: 1.7; }
+  .orden-block p strong { color: var(--ink); font-weight: 500; }
+
+  .orden-items { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: .84rem; }
+  .orden-items th {
+    background: var(--ivory); text-align: left;
+    padding: 9px 12px;
+    font-size: .72rem; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--ink-mid);
+  }
+  .orden-items td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--ink); }
+  .orden-items .td-r { text-align: right; }
+
+  .orden-totals { margin-left: auto; width: 260px; }
+  .orden-total-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: .84rem; color: var(--ink-mid); }
+  .orden-total-row.grand { font-weight: 600; color: var(--ink); font-size: 1rem; font-family: var(--font-h); border-top: 1.5px solid var(--border); padding-top: 10px; margin-top: 4px; }
+
+  .mensaje-box {
+    background: var(--cream);
+    border-left: 3px solid var(--gold);
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+    color: var(--ink-mid);
+    font-size: .87rem;
+    margin: 20px 0;
+    line-height: 1.6;
+    font-family: var(--font-h);
+  }
+
+  /* ── BUTTONS ── */
+  .btn-row {
+    display: flex; gap: 12px; margin-top: 28px;
+    justify-content: flex-end; align-items: center;
+  }
+  .btn {
+    padding: 12px 28px;
+    border-radius: 7px;
+    font-family: var(--font-b);
+    font-size: .88rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all .2s;
+    letter-spacing: .02em;
+  }
+  .btn-primary {
+    background: var(--red);
+    color: var(--white);
+    box-shadow: 0 3px 12px rgba(181,25,43,.25);
+  }
+  .btn-primary:hover { background: var(--red-dk); transform: translateY(-1px); box-shadow: 0 5px 16px rgba(181,25,43,.3); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-secondary {
+    background: transparent;
+    color: var(--ink-mid);
+    border: 1.5px solid var(--border);
+  }
+  .btn-secondary:hover { border-color: var(--ink-mid); color: var(--ink); }
+  .btn-ghost { background: transparent; color: var(--ink-lt); font-size: .82rem; text-decoration: underline; cursor: pointer; border: none; }
+
+  .btn-search {
+    background: var(--ink);
+    color: var(--white);
+    padding: 11px 22px;
+    border-radius: 7px;
+    border: none;
+    font-family: var(--font-b);
+    font-size: .88rem;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background .2s;
+    flex-shrink: 0;
+  }
+  .btn-search:hover { background: var(--red); }
+
+  .btn-print {
+    background: var(--gold);
+    color: var(--white);
+    padding: 12px 28px;
+    border-radius: 7px;
+    border: none;
+    font-family: var(--font-b);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .btn-print:hover { filter: brightness(1.1); }
+
+  /* ── LOADING ── */
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid rgba(255,255,255,.4);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin .6s linear infinite;
+    display: inline-block;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(26,18,9,.45);
+    z-index: 999;
+    align-items: center; justify-content: center;
+    flex-direction: column; gap: 12px;
+  }
+  .loading-overlay.show { display: flex; }
+  .loading-box {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 28px 36px;
+    text-align: center;
+    font-size: .9rem;
+    color: var(--ink-mid);
+  }
+  .loading-box .big-spin {
+    width: 36px; height: 36px;
+    border: 3px solid var(--red-lt);
+    border-top-color: var(--red);
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    margin: 0 auto 14px;
+  }
+
+  /* ── SUCCESS ── */
+  .success-section {
+    display: none;
+    text-align: center;
+    padding: 60px 20px;
+  }
+  .success-section.show { display: block; }
+  .success-heart {
+    font-size: 4rem;
+    animation: heartBeat 1s ease infinite;
+  }
+  @keyframes heartBeat {
+    0%,100% { transform: scale(1); }
+    15%      { transform: scale(1.2); }
+    30%      { transform: scale(1); }
+    45%      { transform: scale(1.1); }
+  }
+  .success-title {
+    font-family: var(--font-h);
+    font-size: 2rem;
+    color: var(--red);
+    margin: 16px 0 8px;
+  }
+  .success-sub { color: var(--ink-mid); font-size: .9rem; }
+  .order-badge {
+    display: inline-block;
+    background: var(--red-lt);
+    border: 1.5px solid var(--red);
+    color: var(--red);
+    padding: 6px 20px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 1rem;
+    margin: 16px 0;
+    font-family: var(--font-h);
+  }
+
+  /* ── MISC ── */
+  .checkbox-row {
+    display: flex; align-items: center; gap: 10px;
+    cursor: pointer; padding: 12px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    transition: all .2s;
+    margin-bottom: 16px;
+    background: var(--white);
+  }
+  .checkbox-row:hover { border-color: var(--red); }
+  .checkbox-row input { width: auto; accent-color: var(--red); }
+  .checkbox-row span { font-size: .87rem; color: var(--ink-mid); }
+
+  @media (max-width: 620px) {
+    header { padding: 18px 20px; }
+    header h1 { font-size: 1.15rem; }
+    .header-sub { display: none; }
+    .section-card { padding: 24px 20px; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .col-full { grid-column: 1; }
+    .stepper { padding: 20px 16px 0; }
+    .step-label { display: none; }
+    .orden-grid { grid-template-columns: 1fr; }
+    .orden-totals { width: 100%; }
+    .cart-header { display: none; }
+    .cart-item { grid-template-columns: 1fr auto auto; grid-template-rows: auto auto; }
+  }
+
+  @media print {
+    header, .stepper, .btn-row, .no-print { display: none !important; }
+    .orden-print { border: none; box-shadow: none; margin: 0; padding: 0; }
+    body { background: white; }
+    .section { display: block !important; }
+    .section:not(#sec-resumen) { display: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOADING OVERLAY -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-box">
+    <div class="big-spin"></div>
+    <div id="loadingMsg">Procesando...</div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo-heart">❤</div>
+  <h1>Fundación Infantil <span>Santiago Corazón</span></h1>
+  <div class="header-sub">
+    Formulario de Pedido<br>
+    <span id="headerDate"></span>
+  </div>
+</header>
+
+<!-- STEPPER -->
+<div class="stepper" id="stepper">
+  <div class="step-item active" data-step="1">
+    <div class="step-dot">1</div>
+    <div class="step-label">Comprador</div>
+  </div>
+  <div class="step-item" data-step="2">
+    <div class="step-dot">2</div>
+    <div class="step-label">Destinatario</div>
+  </div>
+  <div class="step-item" data-step="3">
+    <div class="step-dot">3</div>
+    <div class="step-label">Protagonista</div>
+  </div>
+  <div class="step-item" data-step="4">
+    <div class="step-dot">4</div>
+    <div class="step-label">Productos</div>
+  </div>
+  <div class="step-item" data-step="5">
+    <div class="step-dot">5</div>
+    <div class="step-label">Envío</div>
+  </div>
+  <div class="step-item" data-step="6">
+    <div class="step-dot">6</div>
+    <div class="step-label">Orden</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ══ SECCIÓN 1: COMPRADOR ══ -->
+  <div class="section active" id="sec-1">
+    <div class="section-card">
+      <div class="section-title">¿Quién <em>realiza</em> el pedido?</div>
+      <div class="section-sub">Ingresa tu número de cédula para buscar tus datos o regístralos por primera vez.</div>
+
+      <div class="cedula-wrap">
+        <div class="field">
+          <label>Número de Cédula <span class="req">*</span></label>
+          <input type="number" id="cedulaInput" placeholder="Ej: 43512345" />
+        </div>
+        <button class="btn-search" onclick="buscarTercero()">
+          <span id="searchBtnTxt">Buscar</span>
+        </button>
+      </div>
+
+      <div class="search-status" id="searchStatus">
+        <span class="status-icon" id="statusIcon"></span>
+        <span id="statusMsg"></span>
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label>Nombres <span class="req">*</span></label>
+          <input type="text" id="c_nombres" placeholder="Nombres" />
+        </div>
+        <div class="field">
+          <label>Apellidos <span class="req">*</span></label>
+          <input type="text" id="c_apellidos" placeholder="Apellidos" />
+        </div>
+        <div class="field">
+          <label>Celular <span class="req">*</span></label>
+          <input type="tel" id="c_celular" placeholder="3001234567" />
+        </div>
+        <div class="field">
+          <label>Correo electrónico</label>
+          <input type="email" id="c_correo" placeholder="correo@ejemplo.com" />
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="irA(2)">Continuar →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SECCIÓN 2: DESTINATARIO ══ -->
+  <div class="section" id="sec-2">
+    <div class="section-card">
+      <div class="section-title">¿Quién <em>recibe</em> el pedido?</div>
+      <div class="section-sub">La persona y lugar donde se entregará el regalo o bono.</div>
+
+      <label class="checkbox-row" style="margin-bottom:20px;">
+        <input type="checkbox" id="mismoComprador" onchange="toggleMismoComprador(this)" />
+        <span>El destinatario soy yo mismo (comprador y receptor son la misma persona)</span>
+      </label>
+
+      <div id="destinatarioFields">
+        <div class="grid-2">
+          <div class="field">
+            <label>Nombres <span class="req">*</span></label>
+            <input type="text" id="d_nombres" placeholder="Nombres del destinatario" />
+          </div>
+          <div class="field">
+            <label>Apellidos <span class="req">*</span></label>
+            <input type="text" id="d_apellidos" placeholder="Apellidos del destinatario" />
+          </div>
+          <div class="field">
+            <label>Celular de contacto <span class="req">*</span></label>
+            <input type="tel" id="d_celular" placeholder="3001234567" />
+          </div>
+          <div class="field">
+            <label>Ciudad / Municipio</label>
+            <input type="text" id="d_ciudad" placeholder="Medellín" />
+          </div>
+          <div class="field col-full">
+            <label>Dirección de entrega <span class="req">*</span></label>
+            <input type="text" id="d_direccion" placeholder="Cra 45 # 23-10, Apto 301, Barrio..." />
+          </div>
+          <div class="field col-full">
+            <label>Referencia o indicaciones de la dirección</label>
+            <input type="text" id="d_referencia" placeholder="Frente al parque, edificio azul, preguntar por..." />
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="irA(1)">← Atrás</button>
+        <button class="btn btn-primary" onclick="irA(3)">Continuar →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SECCIÓN 3: PROTAGONISTA ══ -->
+  <div class="section" id="sec-3">
+    <div class="section-card">
+      <div class="section-title">El <em>protagonista</em> del momento</div>
+      <div class="section-sub">¿En honor a quién se hace este pedido? Puede ser un cumpleañero, un bebé recién nacido, un fallecido...</div>
+
+      <div class="field">
+        <label>Ocasión <span class="req">*</span></label>
+        <div class="ocasion-select" id="ocasionBtns">
+          <button class="ocasion-btn" onclick="selOcasion(this,'Cumpleaños')">🎂 Cumpleaños</button>
+          <button class="ocasion-btn" onclick="selOcasion(this,'Condolencias')">🕊 Condolencias</button>
+          <button class="ocasion-btn" onclick="selOcasion(this,'Bebé')">👶 Bebé</button>
+          <button class="ocasion-btn" onclick="selOcasion(this,'Amor y Amistad')">💝 Amor y Amistad</button>
+          <button class="ocasion-btn" onclick="selOcasion(this,'Día de la Madre')">🌸 Día de la Madre</button>
+          <button class="ocasion-btn" onclick="selOcasion(this,'Día del Padre')">👔 Día del Padre</button>
+          <button class="ocasion-btn" onclick="selOcasion(this,'Graduación')">🎓 Graduación</button>
+          <button class="ocasion-btn" onclick="selOcasion(this,'Recuperación')">💊 Recuperación / Salud</button>
+          <button class="ocasion-btn" onclick="selOcasion(this,'Navidad')">🎄 Navidad</button>
+          <button class="ocasion-btn" onclick="selOcasion(this,'Donación')">❤ Donación</button>
+          <button class="ocasion-btn" onclick="selOcasion(this,'Otra')">✦ Otra</button>
+        </div>
+        <input type="hidden" id="p_ocasion" />
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label>Nombre del protagonista <span class="req">*</span></label>
+          <input type="text" id="p_nombre" placeholder="Nombre completo" />
+        </div>
+        <div class="field">
+          <label>Detalle adicional</label>
+          <input type="text" id="p_detalle" placeholder="Ej: cumple 50 años, nació el 10 de mayo..." />
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="subsection-title">✉ Mensaje</div>
+      <div class="field">
+        <label>Mensaje de felicitación o condolencias</label>
+        <textarea id="p_mensaje" placeholder="Escribe aquí el mensaje que irá en la tarjeta..."></textarea>
+      </div>
+      <div class="field">
+        <label>¿De parte de quién firma el mensaje?</label>
+        <input type="text" id="p_firma" placeholder="Ej: Con amor, tu familia / La empresa XYZ" />
+      </div>
+      <div class="field">
+        <label>Observaciones adicionales para el pedido</label>
+        <textarea id="p_observaciones" placeholder="Instrucciones especiales, horarios, cómo entregar..." style="min-height:70px;"></textarea>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="irA(2)">← Atrás</button>
+        <button class="btn btn-primary" onclick="irA(4)">Continuar →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SECCIÓN 4: PRODUCTOS ══ -->
+  <div class="section" id="sec-4">
+    <div class="section-card">
+      <div class="section-title">Elige los <em>productos</em></div>
+      <div class="section-sub">Selecciona uno o más artículos. Puedes combinar bonos con acompañantes.</div>
+
+      <div class="cat-tabs" id="catTabs"></div>
+      <div class="products-grid" id="productsGrid"></div>
+
+      <div class="cart-section" id="cartSection" style="margin-top:24px;">
+        <div class="cart-header">
+          <span>Producto</span><span>Cant.</span><span>Subtotal</span><span></span>
+        </div>
+        <div id="cartItems">
+          <div class="cart-empty">Aún no has seleccionado productos</div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="irA(3)">← Atrás</button>
+        <button class="btn btn-primary" onclick="irA(5)">Continuar →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SECCIÓN 5: ENVÍO ══ -->
+  <div class="section" id="sec-5">
+    <div class="section-card">
+      <div class="section-title">Método de <em>envío</em></div>
+      <div class="section-sub">Selecciona la opción de entrega según la zona del destinatario.</div>
+
+      <div class="envio-options" id="envioOptions"></div>
+
+      <div class="totals-box">
+        <div class="total-row"><span>Subtotal productos</span><span id="subtotalProd">$ 0</span></div>
+        <div class="total-row"><span>Costo de envío</span><span id="costoEnvio">$ 0</span></div>
+        <div class="total-row grand"><span>Total del pedido</span><span id="totalPedido">$ 0</span></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="irA(4)">← Atrás</button>
+        <button class="btn btn-primary" onclick="irA(6)">Ver Orden →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SECCIÓN 6: ORDEN / RESUMEN ══ -->
+  <div class="section" id="sec-resumen">
+    <div class="section-card no-print">
+      <div class="section-title">Revisión <em>final</em></div>
+      <div class="section-sub">Revisa el pedido completo antes de confirmarlo. El operador puede hacer ajustes aquí.</div>
+
+      <div class="field">
+        <label>Método de pago</label>
+        <select id="metodoPago">
+          <option value="">— Selecciona —</option>
+          <option>Efectivo</option>
+          <option>Transferencia / PSE</option>
+          <option>Tarjeta crédito / débito</option>
+          <option>Nequi / Daviplata</option>
+          <option>Pendiente de pago</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Atendido por</label>
+        <input type="text" id="atendidoPor" placeholder="Nombre de quien registra el pedido" />
+      </div>
+    </div>
+
+    <div class="orden-print" id="ordenPrint">
+      <!-- Generado por JS -->
+    </div>
+
+    <div class="btn-row no-print">
+      <button class="btn btn-secondary" onclick="irA(5)">← Atrás</button>
+      <button class="btn-print" onclick="window.print()">🖨 Imprimir Orden</button>
+      <button class="btn btn-primary" onclick="confirmarPedido()">✓ Confirmar y Guardar</button>
+    </div>
+  </div>
+
+  <!-- ══ ÉXITO ══ -->
+  <div class="success-section" id="successSection">
+    <div class="success-heart">❤️</div>
+    <div class="success-title">¡Pedido registrado!</div>
+    <div class="order-badge" id="successOrderNum"></div>
+    <div class="success-sub">El pedido fue guardado exitosamente en el sistema.<br>Puedes imprimir la orden o registrar un nuevo pedido.</div>
+    <div class="btn-row" style="justify-content:center; margin-top:28px;">
+      <button class="btn-print" onclick="window.print()">🖨 Imprimir</button>
+      <button class="btn btn-primary" onclick="nuevoPedido()">+ Nuevo Pedido</button>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// ═══════════════════════════════════════════════════
+// CONFIGURACIÓN — reemplaza esta URL con la de tu Apps Script
+// ═══════════════════════════════════════════════════
+const SCRIPT_URL = 'TU_APPS_SCRIPT_URL_AQUI';
+
+// ── ESTADO GLOBAL ──
+let state = {
+  cedula: '', terceroId: null, esNuevo: false,
+  comprador: {}, destinatario: {},
+  protagonista: { ocasion:'', nombre:'', detalle:'', mensaje:'', firma:'', observaciones:'' },
+  carrito: [],
+  envio: null,
+  metodoPago: '', atendidoPor: '',
+  currentStep: 1
+};
+
+// ── CATÁLOGO DE PRODUCTOS (sincronizado con imágenes y Excel) ──
+const PRODUCTOS = [
+  // BONOS
+  { id:'B1', cat:'Bonos', sub:'', nombre:'Bono Plegable', precio:82000, detalle:'Portada troquelada, cinta de seda, tarjeta marcada a mano en caligrafía' },
+  { id:'B2', cat:'Bonos', sub:'', nombre:'Bono En Bolsa', precio:100000, detalle:'Plegable en bolsa de organza con cinta de seda y tarjeta marcada a mano' },
+  { id:'B3', cat:'Bonos', sub:'', nombre:'Bono En Caja', precio:147000, detalle:'Plegable en caja de cartón con cierre imán, cinta de seda y tarjeta marcada a mano' },
+  { id:'B4', cat:'Bonos', sub:'', nombre:'Bono Virtual', precio:78000, detalle:'Video animado y personalizado, se envía por mail o WhatsApp' },
+  // PLANTAS
+  { id:'P1', cat:'Acompañantes', sub:'Plantas', nombre:'Anturio', precio:150000 },
+  { id:'P2', cat:'Acompañantes', sub:'Plantas', nombre:'Bonsai', precio:150000 },
+  { id:'P3', cat:'Acompañantes', sub:'Plantas', nombre:'Orquídea', precio:150000 },
+  { id:'P4', cat:'Acompañantes', sub:'Plantas', nombre:'Siembra de Árbol', precio:148000 },
+  { id:'P5', cat:'Acompañantes', sub:'Plantas', nombre:'Matera', precio:49000 },
+  { id:'P6', cat:'Acompañantes', sub:'Plantas', nombre:'Dos Anturios en Canasta', precio:470000 },
+  { id:'P7', cat:'Acompañantes', sub:'Plantas', nombre:'Dos Orquídeas en Canasta', precio:470000 },
+  { id:'P8', cat:'Acompañantes', sub:'Plantas', nombre:'Tres Anturios en Canasta', precio:974000 },
+  { id:'P9', cat:'Acompañantes', sub:'Plantas', nombre:'Tres Orquídeas en Canasta', precio:974000 },
+  // CONSUMIBLES
+  { id:'C1', cat:'Acompañantes', sub:'Consumibles', nombre:'Chocolatina Evok', precio:83000 },
+  { id:'C2', cat:'Acompañantes', sub:'Consumibles', nombre:'Caja de Té', precio:81000 },
+  { id:'C3', cat:'Acompañantes', sub:'Consumibles', nombre:'Caja de Blondies Mikaela', precio:83000 },
+  { id:'C4', cat:'Acompañantes', sub:'Consumibles', nombre:'Bombones rellenos de Chocolate Evok No. 2', precio:126000 },
+  { id:'C5', cat:'Acompañantes', sub:'Consumibles', nombre:'Infusiones de Corazón Evok No. 3', precio:138000 },
+  { id:'C6', cat:'Acompañantes', sub:'Consumibles', nombre:'Kit Tranquilidad', precio:231000 },
+  { id:'C7', cat:'Acompañantes', sub:'Consumibles', nombre:'Amor Ancestral', precio:359000 },
+  // VELAS
+  { id:'V1', cat:'Acompañantes', sub:'Velas', nombre:'Vela de Corazón con base redonda de cemento', precio:39000 },
+  { id:'V2', cat:'Acompañantes', sub:'Velas', nombre:'Cajita con 4 velas de corazón', precio:42000 },
+  { id:'V3', cat:'Acompañantes', sub:'Velas', nombre:'Vela Corazoncitos Lata', precio:52000 },
+  { id:'V4', cat:'Acompañantes', sub:'Velas', nombre:'Vela Jarrón Mascota', precio:55000 },
+  { id:'V5', cat:'Acompañantes', sub:'Velas', nombre:'Vela en vidrio de Corazoncitos', precio:52000 },
+  { id:'V6', cat:'Acompañantes', sub:'Velas', nombre:'Vela en vidrio', precio:67000 },
+  { id:'V7', cat:'Acompañantes', sub:'Velas', nombre:'Vela dibujo corazoncitos', precio:88000 },
+  { id:'V8', cat:'Acompañantes', sub:'Velas', nombre:'Vela en cerámica del Carmen', precio:97000 },
+  // LÍNEA DE CORAZÓN
+  { id:'L1', cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Corazón Pequeño en Vidrio', precio:27000 },
+  { id:'L2', cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Plato de Corazón', precio:30000 },
+  { id:'L3', cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Manilla de Miyuki', precio:21000 },
+  { id:'L4', cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Manilla de Corazones de Nacar', precio:33000 },
+  { id:'L5', cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Corazón en Macramé Mini', precio:36000 },
+  { id:'L6', cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Corazón Mediano en Vidrio', precio:42000 },
+  { id:'L7', cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Corazón pin de vidrio', precio:42000 },
+  { id:'L8', cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Corazón orgánico pequeño', precio:86000 },
+  { id:'L9', cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Bolsa de Corazón Terapéutica', precio:84000 },
+  { id:'L10',cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Corazón Grande en Vidrio', precio:92000 },
+  { id:'L11',cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Corazón con alas', precio:100000 },
+  { id:'L12',cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Cuadro de Corazón', precio:92000 },
+  { id:'L13',cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Corazón Orgánico de Pared', precio:90000 },
+  { id:'L14',cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Collar corazón en cadena', precio:90000 },
+  { id:'L15',cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Corazón bordado en Miyuki', precio:113000 },
+  { id:'L16',cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Corazón orgánico grande', precio:120000 },
+  { id:'L17',cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Angelita de Corazón', precio:106000 },
+  { id:'L18',cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Corazón con Alas Grande', precio:138000 },
+  { id:'L19',cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Escultura de Corazón', precio:188000 },
+  // OBJETOS
+  { id:'O1', cat:'Acompañantes', sub:'Objetos', nombre:'Abrazador Mini', precio:37000 },
+  { id:'O2', cat:'Acompañantes', sub:'Objetos', nombre:'Libro Cuando te sientas triste', precio:68000 },
+  { id:'O3', cat:'Acompañantes', sub:'Objetos', nombre:'Libro Fotones de Pensamientos', precio:60000 },
+  { id:'O4', cat:'Acompañantes', sub:'Objetos', nombre:'Marco con letras para niños', precio:81000 },
+  { id:'O5', cat:'Acompañantes', sub:'Objetos', nombre:'Abrazador', precio:135000 },
+  { id:'O6', cat:'Acompañantes', sub:'Objetos', nombre:'Libro mi Gata Ágata', precio:79000 },
+  // LÍNEA EMPRESARIAL
+  { id:'E1', cat:'Acompañantes', sub:'Empresarial', nombre:'Manilla de Corazón', precio:11000 },
+  { id:'E2', cat:'Acompañantes', sub:'Empresarial', nombre:'Lapicero de Corazón', precio:20000 },
+  { id:'E3', cat:'Acompañantes', sub:'Empresarial', nombre:'Paño limpiador de lentes y pantallas', precio:17000 },
+  { id:'E4', cat:'Acompañantes', sub:'Empresarial', nombre:'Pin Santiago Corazón', precio:34000 },
+  { id:'E5', cat:'Acompañantes', sub:'Empresarial', nombre:'Pin de corazón en 3D', precio:38000 },
+  // DONACIONES
+  { id:'D1', cat:'Donaciones', sub:'', nombre:'Donación en dinero', precio:0, esDonacion:true },
+  { id:'D2', cat:'Donaciones', sub:'', nombre:'Donación en especie', precio:0, esDonacion:true },
+];
+
+// ── OPCIONES DE ENVÍO ──
+const ENVIOS = [
+  { id:'E0', label:'Bonos: Medellín, Envigado, Sabaneta, Itagüi', sub:'Entrega 1-3 días hábiles', precio:0 },
+  { id:'E1', label:'Bonos sin acompañante — Envío nacional', sub:'Sobre, bolsa o caja · 3-5 días hábiles', precio:15000 },
+  { id:'E2', label:'Otros productos — Medellín, Envigado, Sabaneta, Itagüi, Bello, Estrella', sub:'1-3 días hábiles', precio:17500 },
+  { id:'E3', label:'Corregimientos de Medellín, Alto Palmas, Caldas, La Estrella', sub:'1-3 días hábiles', precio:24000 },
+  { id:'E4', label:'Abrazador, Kits Evok, Velas, Corazones — Envío nacional', sub:'3-5 días hábiles', precio:25000 },
+  { id:'E5', label:'Guarne, Girardota, El Retiro', sub:'1-3 días hábiles', precio:36000 },
+  { id:'E6', label:'Rionegro, La Ceja, Barbosa', sub:'1-3 días hábiles', precio:54000 },
+  { id:'E7', label:'Bonos con plantas — Envío nacional', sub:'3-5 días hábiles', precio:58000 },
+];
+
+// ── HELPERS ──
+const fmt = n => '$ ' + Number(n).toLocaleString('es-CO');
+const $ = id => document.getElementById(id);
+const today = () => new Date().toLocaleDateString('es-CO',{year:'numeric',month:'long',day:'numeric'});
+const orderNum = () => 'SC-' + Date.now().toString().slice(-7);
+
+let currentOrderNum = orderNum();
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded', () => {
+  $('headerDate').textContent = today();
+  renderCatalogo();
+  renderEnvios();
+  renderOrden();
+});
+
+// ── STEPPER ──
+function irA(step) {
+  if(step > state.currentStep) {
+    if(!validarSeccion(state.currentStep)) return;
+  }
+  state.currentStep = step;
+
+  // Ocultar todas las secciones
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+
+  if(step <= 5) {
+    $('sec-' + step).classList.add('active');
+  } else {
+    $('sec-resumen').classList.add('active');
+    renderOrden();
+  }
+
+  // Actualizar stepper
+  document.querySelectorAll('.step-item').forEach(el => {
+    const s = parseInt(el.dataset.step);
+    el.classList.remove('active','done');
+    if(s === step) el.classList.add('active');
+    if(s < step) el.classList.add('done');
+  });
+
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ── VALIDACIONES ──
+function validarSeccion(step) {
+  if(step === 1) {
+    if(!$('c_nombres').value.trim()) { alert('Por favor ingresa los nombres del comprador.'); return false; }
+    if(!$('c_apellidos').value.trim()) { alert('Por favor ingresa los apellidos.'); return false; }
+    if(!$('c_celular').value.trim()) { alert('Por favor ingresa el celular.'); return false; }
+    state.comprador = {
+      cedula: $('cedulaInput').value.trim(),
+      nombres: $('c_nombres').value.trim(),
+      apellidos: $('c_apellidos').value.trim(),
+      celular: $('c_celular').value.trim(),
+      correo: $('c_correo').value.trim(),
+      esNuevo: state.esNuevo
+    };
+  }
+  if(step === 2) {
+    if(!$('mismoComprador').checked) {
+      if(!$('d_nombres').value.trim()) { alert('Por favor ingresa los nombres del destinatario.'); return false; }
+      if(!$('d_celular').value.trim()) { alert('Por favor ingresa el celular del destinatario.'); return false; }
+      if(!$('d_direccion').value.trim()) { alert('Por favor ingresa la dirección de entrega.'); return false; }
+    }
+    state.destinatario = $('mismoComprador').checked
+      ? { ...state.comprador, direccion:'(Mismo comprador)', referencia:'' }
+      : {
+          nombres: $('d_nombres').value.trim(),
+          apellidos: $('d_apellidos').value.trim(),
+          celular: $('d_celular').value.trim(),
+          ciudad: $('d_ciudad').value.trim(),
+          direccion: $('d_direccion').value.trim(),
+          referencia: $('d_referencia').value.trim()
+        };
+  }
+  if(step === 3) {
+    if(!$('p_ocasion').value) { alert('Por favor selecciona la ocasión.'); return false; }
+    if(!$('p_nombre').value.trim()) { alert('Por favor ingresa el nombre del protagonista.'); return false; }
+    state.protagonista = {
+      ocasion: $('p_ocasion').value,
+      nombre: $('p_nombre').value.trim(),
+      detalle: $('p_detalle').value.trim(),
+      mensaje: $('p_mensaje').value.trim(),
+      firma: $('p_firma').value.trim(),
+      observaciones: $('p_observaciones').value.trim()
+    };
+  }
+  if(step === 4) {
+    if(state.carrito.length === 0) { alert('Por favor selecciona al menos un producto.'); return false; }
+  }
+  if(step === 5) {
+    if(!state.envio) { alert('Por favor selecciona un método de envío.'); return false; }
+  }
+  return true;
+}
+
+// ── BUSCAR TERCERO ──
+async function buscarTercero() {
+  const cedula = $('cedulaInput').value.trim();
+  if(!cedula) { alert('Ingresa un número de cédula.'); return; }
+
+  $('searchBtnTxt').innerHTML = '<span class="spinner"></span>';
+
+  try {
+    const url = `${SCRIPT_URL}?action=buscarTercero&cedula=${encodeURIComponent(cedula)}`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+
+    if(data.encontrado) {
+      const t = data.tercero;
+      $('c_nombres').value   = t.nombres || '';
+      $('c_apellidos').value = t.apellidos || '';
+      $('c_celular').value   = t.celular || '';
+      $('c_correo').value    = t.correo || '';
+      [$('c_nombres'),$('c_apellidos'),$('c_celular'),$('c_correo')].forEach(el => el.setAttribute('readonly',''));
+      mostrarStatus('found','✓','¡Encontrado! Tus datos fueron cargados automáticamente.');
+      state.esNuevo = false;
+      state.terceroId = t.id || null;
+    } else {
+      [$('c_nombres'),$('c_apellidos'),$('c_celular'),$('c_correo')].forEach(el => el.removeAttribute('readonly'));
+      $('c_nombres').value = $('c_apellidos').value = $('c_celular').value = $('c_correo').value = '';
+      mostrarStatus('not-found','⚠','No encontramos tu cédula. Por favor completa tus datos para registrarte.');
+      state.esNuevo = true;
+    }
+  } catch(e) {
+    // Si no hay conexión con el script, dejar editar manualmente
+    [$('c_nombres'),$('c_apellidos'),$('c_celular'),$('c_correo')].forEach(el => el.removeAttribute('readonly'));
+    mostrarStatus('not-found','⚠','No se pudo conectar al servidor. Completa los datos manualmente.');
+    state.esNuevo = true;
+    console.warn('Error buscando tercero:', e);
+  }
+
+  $('searchBtnTxt').textContent = 'Buscar';
+}
+
+function mostrarStatus(tipo, icon, msg) {
+  const el = $('searchStatus');
+  el.className = 'search-status ' + tipo;
+  $('statusIcon').textContent = icon;
+  $('statusMsg').textContent = msg;
+}
+
+// ── MISMO COMPRADOR ──
+function toggleMismoComprador(cb) {
+  $('destinatarioFields').style.display = cb.checked ? 'none' : 'block';
+}
+
+// ── OCASIÓN ──
+function selOcasion(btn, val) {
+  document.querySelectorAll('.ocasion-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  $('p_ocasion').value = val;
+}
+
+// ── CATÁLOGO ──
+function renderCatalogo(filtro = 'Todos') {
+  const cats = ['Todos', ...new Set(PRODUCTOS.map(p => p.cat))];
+  const tabsEl = $('catTabs');
+  tabsEl.innerHTML = cats.map(c =>
+    `<button class="cat-tab ${c===filtro?'active':''}" onclick="renderCatalogo('${c}')">${c}</button>`
+  ).join('');
+
+  const lista = filtro === 'Todos' ? PRODUCTOS : PRODUCTOS.filter(p => p.cat === filtro);
+
+  $('productsGrid').innerHTML = lista.map(p => {
+    const enCarrito = state.carrito.find(i => i.id === p.id);
+    return `<div class="prod-card ${enCarrito?'selected':''}" onclick="toggleProducto('${p.id}')">
+      <div class="prod-cat-label">${p.sub || p.cat}</div>
+      <div class="prod-name">${p.nombre}</div>
+      <div class="prod-price">${p.precio > 0 ? fmt(p.precio) : 'Valor libre'}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleProducto(id) {
+  const prod = PRODUCTOS.find(p => p.id === id);
+  const idx = state.carrito.findIndex(i => i.id === id);
+  if(idx >= 0) {
+    state.carrito.splice(idx, 1);
+  } else {
+    state.carrito.push({ ...prod, qty: 1, valorLibre: 0 });
+  }
+  renderCatalogo(document.querySelector('.cat-tab.active')?.textContent || 'Todos');
+  renderCarrito();
+}
+
+function renderCarrito() {
+  const el = $('cartItems');
+  if(state.carrito.length === 0) {
+    el.innerHTML = '<div class="cart-empty">Aún no has seleccionado productos</div>';
+    return;
+  }
+  el.innerHTML = state.carrito.map((item, i) => {
+    const esDonacion = item.esDonacion;
+    const subtotal = esDonacion ? (item.valorLibre || 0) : item.precio * item.qty;
+    return `<div class="cart-item">
+      <div>
+        <div class="item-name">${item.nombre}</div>
+        <div class="item-sub">${item.sub || item.cat}${esDonacion ? ' · Ingresa el valor' : ''}</div>
+        ${esDonacion ? `<input type="number" class="qty-input" style="width:120px;margin-top:6px;" placeholder="$ Valor" value="${item.valorLibre||''}" onchange="setValorLibre(${i},this.value)">` : ''}
+      </div>
+      <div>${esDonacion ? '—' : `<input type="number" class="qty-input" value="${item.qty}" min="1" onchange="setQty(${i},this.value)">`}</div>
+      <div class="item-total">${fmt(subtotal)}</div>
+      <button class="remove-btn" onclick="quitarItem(${i})">✕</button>
+    </div>`;
+  }).join('');
+  actualizarTotales();
+}
+
+function setQty(i, v) {
+  state.carrito[i].qty = Math.max(1, parseInt(v)||1);
+  renderCarrito();
+}
+function setValorLibre(i, v) {
+  state.carrito[i].valorLibre = parseInt(v)||0;
+  actualizarTotales();
+}
+function quitarItem(i) {
+  state.carrito.splice(i,1);
+  renderCatalogo(document.querySelector('.cat-tab.active')?.textContent || 'Todos');
+  renderCarrito();
+}
+
+function getSubtotal() {
+  return state.carrito.reduce((s,item) => {
+    return s + (item.esDonacion ? (item.valorLibre||0) : item.precio * item.qty);
+  }, 0);
+}
+
+// ── ENVÍOS ──
+function renderEnvios() {
+  $('envioOptions').innerHTML = ENVIOS.map(e =>
+    `<div class="envio-card ${state.envio?.id===e.id?'selected':''}" onclick="selEnvio('${e.id}')">
+      <div>
+        <div class="envio-label">${e.label}</div>
+        <div class="envio-sub">${e.sub}</div>
+      </div>
+      <div class="envio-price ${e.precio===0?'free':''}">${e.precio===0?'GRATIS':fmt(e.precio)}</div>
+    </div>`
+  ).join('');
+  actualizarTotales();
+}
+
+function selEnvio(id) {
+  state.envio = ENVIOS.find(e => e.id === id);
+  renderEnvios();
+}
+
+function actualizarTotales() {
+  const sub = getSubtotal();
+  const env = state.envio?.precio || 0;
+  $('subtotalProd') && ($('subtotalProd').textContent = fmt(sub));
+  $('costoEnvio')   && ($('costoEnvio').textContent   = fmt(env));
+  $('totalPedido')  && ($('totalPedido').textContent  = fmt(sub + env));
+}
+
+// ── ORDEN ──
+function renderOrden() {
+  const sub = getSubtotal();
+  const env = state.envio?.precio || 0;
+  const total = sub + env;
+
+  const itemsHTML = state.carrito.map(item => {
+    const subtotal = item.esDonacion ? (item.valorLibre||0) : item.precio * item.qty;
+    return `<tr>
+      <td>${item.nombre}${item.detalle ? `<br><small style="color:#8a7d72;">${item.detalle}</small>` : ''}</td>
+      <td class="td-r">${item.esDonacion ? '—' : item.qty}</td>
+      <td class="td-r">${item.precio > 0 ? fmt(item.precio) : '—'}</td>
+      <td class="td-r">${fmt(subtotal)}</td>
+    </tr>`;
+  }).join('');
+
+  $('ordenPrint').innerHTML = `
+    <div class="orden-header">
+      <div>
+        <div class="orden-logo">❤ Fundación Infantil Santiago Corazón
+          <small>Centro Comercial Oviedo · Medellín · www.santiagocorazon.org</small>
+        </div>
+      </div>
+      <div class="orden-num">
+        <strong>${currentOrderNum}</strong>
+        <span>Fecha: ${today()}</span><br>
+        <span style="font-size:.75rem;color:#c4933f;">ORDEN DE DESPACHO</span>
+      </div>
+    </div>
+
+    <div class="orden-grid">
+      <div class="orden-block">
+        <h4>📦 Comprador / Pagador</h4>
+        <p>
+          <strong>${state.comprador.nombres||''} ${state.comprador.apellidos||''}</strong><br>
+          CC: ${state.comprador.cedula||'—'}<br>
+          Tel: ${state.comprador.celular||'—'}<br>
+          ${state.comprador.correo ? 'Email: ' + state.comprador.correo : ''}
+          ${state.comprador.esNuevo ? '<br><em style="color:#c4933f;font-size:.75rem;">⚡ Nuevo cliente</em>' : ''}
+        </p>
+      </div>
+      <div class="orden-block">
+        <h4>🚚 Destinatario y entrega</h4>
+        <p>
+          <strong>${state.destinatario.nombres||''} ${state.destinatario.apellidos||''}</strong><br>
+          Tel: ${state.destinatario.celular||'—'}<br>
+          ${state.destinatario.ciudad ? 'Ciudad: ' + state.destinatario.ciudad + '<br>' : ''}
+          Dir: ${state.destinatario.direccion||'—'}<br>
+          ${state.destinatario.referencia ? '<em>' + state.destinatario.referencia + '</em>' : ''}
+        </p>
+      </div>
+      <div class="orden-block">
+        <h4>✨ Protagonista</h4>
+        <p>
+          <strong>${state.protagonista.nombre||'—'}</strong><br>
+          Ocasión: ${state.protagonista.ocasion||'—'}<br>
+          ${state.protagonista.detalle ? state.protagonista.detalle : ''}
+        </p>
+      </div>
+      <div class="orden-block">
+        <h4>📋 Detalles del pedido</h4>
+        <p>
+          Envío: ${state.envio?.label||'No definido'}<br>
+          Pago: ${$('metodoPago')?.value||'—'}<br>
+          Atendido por: ${$('atendidoPor')?.value||'—'}
+        </p>
+      </div>
+    </div>
+
+    ${state.protagonista.mensaje ? `
+    <div class="orden-block" style="margin-bottom:20px;">
+      <h4>✉ Mensaje</h4>
+      <div class="mensaje-box">"${state.protagonista.mensaje}"<br><br>— ${state.protagonista.firma||''}</div>
+    </div>` : ''}
+
+    ${state.protagonista.observaciones ? `
+    <div class="orden-block" style="margin-bottom:20px;">
+      <h4>📝 Observaciones de entrega</h4>
+      <p style="background:var(--cream);padding:10px 14px;border-radius:7px;">${state.protagonista.observaciones}</p>
+    </div>` : ''}
+
+    <table class="orden-items">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th style="text-align:right;">Cant.</th>
+          <th style="text-align:right;">Precio unit.</th>
+          <th style="text-align:right;">Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>${itemsHTML}</tbody>
+    </table>
+
+    <div class="orden-totals">
+      <div class="orden-total-row"><span>Subtotal</span><span>${fmt(sub)}</span></div>
+      <div class="orden-total-row"><span>Envío (${state.envio?.label||'—'})</span><span>${fmt(env)}</span></div>
+      <div class="orden-total-row grand"><span>TOTAL</span><span>${fmt(total)}</span></div>
+    </div>
+
+    <div style="margin-top:32px;padding-top:20px;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:40px;font-size:.8rem;color:#8a7d72;">
+      <div>
+        <div style="border-top:1px solid #ccc;margin-top:40px;padding-top:8px;text-align:center;">Firma del cliente</div>
+      </div>
+      <div>
+        <div style="border-top:1px solid #ccc;margin-top:40px;padding-top:8px;text-align:center;">Firma y sello Fundación</div>
+      </div>
+    </div>
+  `;
+}
+
+// ── CONFIRMAR Y GUARDAR ──
+async function confirmarPedido() {
+  state.metodoPago = $('metodoPago').value;
+  state.atendidoPor = $('atendidoPor').value;
+
+  mostrarLoading('Guardando pedido en el sistema...');
+
+  const payload = {
+    action: 'guardarPedido',
+    orderNum: currentOrderNum,
+    fecha: new Date().toISOString(),
+    comprador: state.comprador,
+    destinatario: state.destinatario,
+    protagonista: state.protagonista,
+    carrito: state.carrito,
+    envio: state.envio,
+    subtotal: getSubtotal(),
+    totalEnvio: state.envio?.precio||0,
+    total: getSubtotal() + (state.envio?.precio||0),
+    metodoPago: state.metodoPago,
+    atendidoPor: state.atendidoPor
+  };
+
+  try {
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  } catch(e) {
+    console.warn('No se pudo guardar en servidor, descargando localmente.', e);
+    // fallback: descarga como CSV
+    descargarCSV(payload);
+  }
+
+  ocultarLoading();
+  mostrarExito();
+}
+
+function descargarCSV(p) {
+  const rows = [
+    ['# Pedido', p.orderNum],
+    ['Fecha', p.fecha],
+    ['Comprador', `${p.comprador.nombres} ${p.comprador.apellidos}`],
+    ['CC', p.comprador.cedula],
+    ['Celular', p.comprador.celular],
+    ['Correo', p.comprador.correo],
+    ['Destinatario', `${p.destinatario.nombres} ${p.destinatario.apellidos}`],
+    ['Dirección', p.destinatario.direccion],
+    ['Ciudad', p.destinatario.ciudad||''],
+    ['Ocasión', p.protagonista.ocasion],
+    ['Protagonista', p.protagonista.nombre],
+    ['Mensaje', p.protagonista.mensaje],
+    ['Firma', p.protagonista.firma],
+    ['Observaciones', p.protagonista.observaciones],
+    [''],
+    ['Producto','Cantidad','Precio unit.','Subtotal'],
+    ...p.carrito.map(i => [i.nombre, i.qty||1, i.precio, i.esDonacion?(i.valorLibre||0):i.precio*i.qty]),
+    [''],
+    ['Subtotal', '', '', p.subtotal],
+    ['Envío', p.envio?.label||'', '', p.totalEnvio],
+    ['TOTAL', '', '', p.total],
+    ['Método de pago', p.metodoPago],
+    ['Atendido por', p.atendidoPor],
+  ];
+  const csv = rows.map(r => r.map(c => `"${String(c||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `pedido_${p.orderNum}.csv`;
+  a.click();
+}
+
+function mostrarExito() {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  $('stepper').style.display = 'none';
+  $('successSection').classList.add('show');
+  $('successOrderNum').textContent = currentOrderNum;
+}
+
+function nuevoPedido() {
+  location.reload();
+}
+
+function mostrarLoading(msg) {
+  $('loadingMsg').textContent = msg;
+  $('loadingOverlay').classList.add('show');
+}
+function ocultarLoading() {
+  $('loadingOverlay').classList.remove('show');
+}
+</script>
+</body>
+</html>
