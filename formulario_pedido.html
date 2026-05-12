@@ -884,6 +884,9 @@
       <div class="section-title">Elige los <em>productos</em></div>
       <div class="section-sub">Selecciona uno o más artículos. Puedes combinar bonos con acompañantes.</div>
 
+      <div style="display:flex;justify-content:flex-end;margin-bottom:16px;">
+        <button class="btn btn-primary" onclick="irA(5)">Continuar →</button>
+      </div>
       <div class="cat-tabs" id="catTabs"></div>
       <div style="margin-bottom:14px;position:relative;">
         <input type="text" id="prodSearch" placeholder="🔍 Buscar producto por nombre..." oninput="filtrarProductos(this.value)"
@@ -1577,21 +1580,10 @@ document.addEventListener('click', (e) => {
 
 // ── IMPRIMIR CON NOMBRE DE ARCHIVO ──
 function imprimirOrden() {
-  const style = document.createElement('style');
-  style.id = 'print-style-temp';
-  style.textContent = `@media print { 
-    header, .stepper, .btn-row, .no-print, #sec-1, #sec-2, #sec-3, #sec-4, #sec-5 { display: none !important; }
-    #sec-resumen { display: block !important; }
-    .section-card.no-print { display: none !important; }
-    body { background: white; }
-  }`;
-  document.head.appendChild(style);
-  
   const oldTitle = document.title;
   document.title = 'Orden_' + currentOrderNum;
   window.print();
-  document.title = oldTitle;
-  setTimeout(() => { const s = $('print-style-temp'); if(s) s.remove(); }, 1000);
+  setTimeout(() => { document.title = oldTitle; }, 2000);
 }
 
 function mostrarLoading(msg) {
