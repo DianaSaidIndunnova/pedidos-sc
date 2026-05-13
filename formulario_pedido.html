@@ -953,6 +953,22 @@
         <label>Atendido por</label>
         <input type="text" id="atendidoPor" placeholder="Nombre de quien registra el pedido" />
       </div>
+      <div class="field">
+        <label>Comprobante de pago <span style="font-size:.72rem;color:var(--ink-lt);font-weight:400;text-transform:none;">(opcional — foto o archivo)</span></label>
+        <label for="comprobanteFile" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:1.5px dashed var(--border);border-radius:8px;cursor:pointer;background:var(--cream);transition:all .2s;" id="comprobanteLabel">
+          <span style="font-size:1.6rem;">📎</span>
+          <div>
+            <div style="font-size:.88rem;font-weight:500;color:var(--ink);">Toca para adjuntar</div>
+            <div style="font-size:.75rem;color:var(--ink-lt);margin-top:2px;">Foto de la galería, cámara o archivo</div>
+          </div>
+        </label>
+        <input type="file" id="comprobanteFile" accept="image/*,application/pdf" capture="environment" style="display:none;" onchange="mostrarComprobante(this)">
+        <div id="comprobantePreview" style="display:none;margin-top:10px;padding:10px 14px;background:var(--ivory);border-radius:8px;display:none;align-items:center;gap:10px;font-size:.84rem;color:var(--ink-mid);">
+          <span style="font-size:1.2rem;">✅</span>
+          <span id="comprobanteNombre"></span>
+          <button onclick="quitarComprobante()" style="margin-left:auto;border:none;background:none;cursor:pointer;color:var(--ink-lt);font-size:.8rem;">✕ Quitar</button>
+        </div>
+      </div>
     </div>
 
     <div class="orden-print" id="ordenPrint">
@@ -1471,6 +1487,22 @@ async function confirmarPedido() {
   };
 
   try {
+    // Si hay comprobante, convertirlo a base64 e incluirlo
+    const fileInput = document.getElementById('comprobanteFile');
+    if (fileInput.files && fileInput.files[0]) {
+      const file = fileInput.files[0];
+      const base64 = await new Promise((res, rej) => {
+        const reader = new FileReader();
+        reader.onload = () => res(reader.result.split(',')[1]);
+        reader.onerror = rej;
+        reader.readAsDataURL(file);
+      });
+      payload.comprobante = {
+        nombre: file.name,
+        tipo: file.type,
+        datos: base64
+      };
+    }
     await fetch(SCRIPT_URL, {
       method: 'POST',
       body: JSON.stringify(payload)
@@ -1524,6 +1556,23 @@ function mostrarExito() {
   $('stepper').style.display = 'none';
   $('successSection').classList.add('show');
   $('successOrderNum').textContent = currentOrderNum;
+}
+
+function mostrarComprobante(input) {
+  if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
+  document.getElementById('comprobanteNombre').textContent = file.name + ' (' + (file.size/1024).toFixed(0) + ' KB)';
+  const preview = document.getElementById('comprobantePreview');
+  preview.style.display = 'flex';
+  document.getElementById('comprobanteLabel').style.borderColor = 'var(--red)';
+  document.getElementById('comprobanteLabel').style.background = 'var(--red-lt)';
+}
+
+function quitarComprobante() {
+  document.getElementById('comprobanteFile').value = '';
+  document.getElementById('comprobantePreview').style.display = 'none';
+  document.getElementById('comprobanteLabel').style.borderColor = 'var(--border)';
+  document.getElementById('comprobanteLabel').style.background = 'var(--cream)';
 }
 
 function nuevoPedido() {
