@@ -1501,14 +1501,7 @@ function renderOrden() {
     <div class="orden-grid">
       <div class="orden-block">
         <h4>📦 Comprador / Pagador</h4>
-        <p>
-          ${state.comprador.tipo === 'Empresa'
-            ? \`<strong>\${state.comprador.razonSocial||''}</strong><br>NIT: \${state.comprador.nit||'—'}<br>Contacto: \${state.comprador.contacto||'—'}<br>Tel: \${state.comprador.telefono||'—'}<br>Factura: \${state.comprador.correoFactura||'—'}\`
-            : \`<strong>\${state.comprador.nombres||''} \${state.comprador.apellidos||''}</strong><br>CC: \${state.comprador.cedula||'—'}<br>Tel: \${state.comprador.celular||'—'}<br>Factura: \${state.comprador.correoFactura||'—'}\`
-          }
-          ${state.comprador.ciudad ? '<br>' + state.comprador.ciudad : ''}
-          ${state.comprador.esNuevo ? '<br><em style="color:#c4933f;font-size:.75rem;">⚡ Nuevo cliente</em>' : ''}
-        </p>
+        <p id="orden-comprador-datos"></p>
       </div>
       <div class="orden-block">
         <h4>🚚 Destinatario y entrega</h4>
@@ -1577,7 +1570,16 @@ function renderOrden() {
       </div>
     </div>
   `;
-}
+
+  // Fill comprador data block
+  const compradorEl = document.getElementById('orden-comprador-datos');
+  if(compradorEl) {
+    if(state.comprador.tipo === 'Empresa') {
+      compradorEl.innerHTML = '<strong>' + (state.comprador.razonSocial||'') + '</strong><br>NIT: ' + (state.comprador.nit||'—') + '<br>Contacto: ' + (state.comprador.contacto||'—') + '<br>Tel: ' + (state.comprador.telefono||'—') + '<br>Factura: ' + (state.comprador.correoFactura||'—') + (state.comprador.ciudad ? '<br>' + state.comprador.ciudad : '') + (state.comprador.esNuevo ? '<br><em style=\"color:#c4933f;font-size:.75rem;\">⚡ Nuevo cliente</em>' : '');
+    } else {
+      compradorEl.innerHTML = '<strong>' + (state.comprador.nombres||'') + ' ' + (state.comprador.apellidos||'') + '</strong><br>CC: ' + (state.comprador.cedula||'—') + '<br>Tel: ' + (state.comprador.celular||'—') + '<br>Factura: ' + (state.comprador.correoFactura||'—') + (state.comprador.ciudad ? '<br>' + state.comprador.ciudad : '') + (state.comprador.esNuevo ? '<br><em style=\"color:#c4933f;font-size:.75rem;\">⚡ Nuevo cliente</em>' : '');
+    }
+  }}
 
 // ── CONFIRMAR Y GUARDAR ──
 async function confirmarPedido() {
