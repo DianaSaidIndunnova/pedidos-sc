@@ -1623,12 +1623,12 @@ async function confirmarPedido() {
     }
     await fetch(SCRIPT_URL, {
       method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(payload)
     });
   } catch(e) {
-    console.warn('No se pudo guardar en servidor, descargando localmente.', e);
-    // fallback: descarga como CSV
-    descargarCSV(payload);
+    console.warn('Error en fetch:', e);
   }
 
   ocultarLoading();
