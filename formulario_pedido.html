@@ -1059,7 +1059,7 @@ let state = {
   carrito: [],
   envio: null,
   metodoPago: '', atendidoPor: '',
-  currentStep: 1
+  currentStep: 0
 };
 
 // ── CATÁLOGO DE PRODUCTOS (sincronizado con imágenes y Excel) ──
@@ -1156,6 +1156,8 @@ let currentOrderNum = orderNum();
 
 // ── INIT ──
 document.addEventListener('DOMContentLoaded', () => {
+  // Pre-seleccionar Personal por defecto
+  selTipoCliente('Personal');
   $('headerDate').textContent = today();
   renderCatalogo();
   renderEnvios();
@@ -1196,7 +1198,7 @@ function irA(step) {
 // ── VALIDACIONES ──
 function validarSeccion(step) {
   if(step === 0) {
-    if(!$('tipoCliente').value) { alert('Por favor selecciona si el pedido es Personal o Empresa.'); return false; }
+    if(!state.tipoCliente || !$('tipoCliente').value) { alert('Por favor selecciona Personal o Empresa.'); return false; }
   }
   if(step === 1) {
     const tipo = state.tipoCliente || 'Personal';
@@ -1283,15 +1285,12 @@ function selTipoCliente(tipo) {
   $('tipoCliente').value = tipo;
   state.tipoCliente = tipo;
   document.querySelectorAll('.tipo-card').forEach(c => c.classList.remove('selected'));
-  $('card-' + tipo.toLowerCase()).classList.add('selected');
-  // Mostrar/ocultar campos según tipo
-  if(tipo === 'Personal') {
-    $('campos-personal').style.display = 'block';
-    $('campos-empresa').style.display = 'none';
-  } else {
-    $('campos-personal').style.display = 'none';
-    $('campos-empresa').style.display = 'block';
-  }
+  const card = $('card-' + tipo.toLowerCase());
+  if(card) card.classList.add('selected');
+  const camposP = $('campos-personal');
+  const camposE = $('campos-empresa');
+  if(camposP) camposP.style.display = tipo === 'Personal' ? 'block' : 'none';
+  if(camposE) camposE.style.display = tipo === 'Empresa'  ? 'block' : 'none';
 }
 
 async function buscarTercero() {
