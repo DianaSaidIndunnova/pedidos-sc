@@ -722,7 +722,7 @@
   </div>
   <div class="step-item" data-step="3">
     <div class="step-dot">3</div>
-    <div class="step-label">Protagonista</div>
+    <div class="step-label">Quien recibe la atención</div>
   </div>
   <div class="step-item" data-step="4">
     <div class="step-dot">4</div>
@@ -869,11 +869,11 @@
     </div>
   </div>
 
-  <!-- ══ SECCIÓN 3: PROTAGONISTA ══ -->
+  <!-- ══ SECCIÓN 3: QUIEN RECIBE ══ -->
   <div class="section" id="sec-3">
     <div class="section-card">
-      <div class="section-title">El <em>protagonista</em> del momento</div>
-      <div class="section-sub">¿En honor a quién se hace este pedido? Puede ser un cumpleañero, un bebé recién nacido, un fallecido...</div>
+      <div class="section-title">Quien <em>recibe</em> la atención</div>
+      <div class="section-sub">¿Quién es la persona que recibe este detalle? Puede ser un cumpleañero, un bebé recién nacido, un fallecido...</div>
 
       <div class="field">
         <label>Ocasión <span class="req">*</span></label>
@@ -895,7 +895,7 @@
 
       <div class="grid-2">
         <div class="field">
-          <label>Nombre del protagonista <span class="req">*</span></label>
+          <label>Nombre del quienRecibe <span class="req">*</span></label>
           <input type="text" id="p_nombre" placeholder="Nombre completo" />
         </div>
         <div class="field">
@@ -1055,7 +1055,7 @@ let state = {
   tipoCliente: 'Personal',
   cedula: '', terceroId: null, esNuevo: false,
   comprador: {}, destinatario: {},
-  protagonista: { ocasion:'', nombre:'', detalle:'', mensaje:'', firma:'', observaciones:'' },
+  quienRecibe: { ocasion:'', nombre:'', detalle:'', mensaje:'', firma:'', observaciones:'' },
   carrito: [],
   envio: null,
   metodoPago: '', atendidoPor: '',
@@ -1261,8 +1261,8 @@ function validarSeccion(step) {
   }
   if(step === 3) {
     if(!$('p_ocasion').value) { alert('Por favor selecciona la ocasión.'); return false; }
-    if(!$('p_nombre').value.trim()) { alert('Por favor ingresa el nombre del protagonista.'); return false; }
-    state.protagonista = {
+    if(!$('p_nombre').value.trim()) { alert('Por favor ingresa el nombre del quienRecibe.'); return false; }
+    state.quienRecibe = {
       ocasion: $('p_ocasion').value,
       nombre: $('p_nombre').value.trim(),
       detalle: $('p_detalle').value.trim(),
@@ -1514,11 +1514,11 @@ function renderOrden() {
         </p>
       </div>
       <div class="orden-block">
-        <h4>✨ Protagonista</h4>
+        <h4>✨ Quien recibe la atención</h4>
         <p>
-          <strong>${state.protagonista.nombre||'—'}</strong><br>
-          Ocasión: ${state.protagonista.ocasion||'—'}<br>
-          ${state.protagonista.detalle ? state.protagonista.detalle : ''}
+          <strong>${state.quienRecibe.nombre||'—'}</strong><br>
+          Ocasión: ${state.quienRecibe.ocasion||'—'}<br>
+          ${state.quienRecibe.detalle ? state.quienRecibe.detalle : ''}
         </p>
       </div>
       <div class="orden-block">
@@ -1531,16 +1531,16 @@ function renderOrden() {
       </div>
     </div>
 
-    ${state.protagonista.mensaje ? `
+    ${state.quienRecibe.mensaje ? `
     <div class="orden-block" style="margin-bottom:20px;">
       <h4>✉ Mensaje</h4>
-      <div class="mensaje-box">"${state.protagonista.mensaje}"<br><br>— ${state.protagonista.firma||''}</div>
+      <div class="mensaje-box">"${state.quienRecibe.mensaje}"<br><br>— ${state.quienRecibe.firma||''}</div>
     </div>` : ''}
 
-    ${state.protagonista.observaciones ? `
+    ${state.quienRecibe.observaciones ? `
     <div class="orden-block" style="margin-bottom:20px;">
       <h4>📝 Observaciones de entrega</h4>
-      <p style="background:var(--cream);padding:10px 14px;border-radius:7px;">${state.protagonista.observaciones}</p>
+      <p style="background:var(--cream);padding:10px 14px;border-radius:7px;">${state.quienRecibe.observaciones}</p>
     </div>` : ''}
 
     <table class="orden-items">
@@ -1594,7 +1594,7 @@ async function confirmarPedido() {
     fecha: new Date().toISOString(),
     comprador: state.comprador,
     destinatario: state.destinatario,
-    protagonista: state.protagonista,
+    quienRecibe: state.quienRecibe,
     carrito: state.carrito,
     envio: state.envio,
     subtotal: getSubtotal(),
@@ -1646,11 +1646,11 @@ function descargarCSV(p) {
     ['Destinatario', `${p.destinatario.nombres} ${p.destinatario.apellidos}`],
     ['Dirección', p.destinatario.direccion],
     ['Ciudad', p.destinatario.ciudad||''],
-    ['Ocasión', p.protagonista.ocasion],
-    ['Protagonista', p.protagonista.nombre],
-    ['Mensaje', p.protagonista.mensaje],
-    ['Firma', p.protagonista.firma],
-    ['Observaciones', p.protagonista.observaciones],
+    ['Ocasión', p.quienRecibe.ocasion],
+    ['Quien recibe la atención', p.quienRecibe.nombre],
+    ['Mensaje', p.quienRecibe.mensaje],
+    ['Firma', p.quienRecibe.firma],
+    ['Observaciones', p.quienRecibe.observaciones],
     [''],
     ['Producto','Cantidad','Precio unit.','Subtotal'],
     ...p.carrito.map(i => [i.nombre, i.qty||1, i.precio, i.esDonacion?(i.valorLibre||0):i.precio*i.qty]),
