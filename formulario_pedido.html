@@ -873,13 +873,13 @@
   <div class="section" id="sec-3">
     <div class="section-card">
       <div class="section-title">Quien <em>recibe</em> la atención</div>
-      <div class="section-sub">¿Quién es la persona que recibe este detalle? Puede ser un cumpleañero, un bebé recién nacido, un fallecido...</div>
+      <div class="section-sub" id="s3-sub">¿Quién es la persona que recibe este detalle?</div>
 
       <div class="field">
         <label>Ocasión <span class="req">*</span></label>
         <div class="ocasion-select" id="ocasionBtns">
+          <button class="ocasion-btn" onclick="selOcasion(this,'Condolencias')">🕊 Pésame / Condolencias</button>
           <button class="ocasion-btn" onclick="selOcasion(this,'Cumpleaños')">🎂 Cumpleaños</button>
-          <button class="ocasion-btn" onclick="selOcasion(this,'Condolencias')">🕊 Condolencias</button>
           <button class="ocasion-btn" onclick="selOcasion(this,'Bebé')">👶 Bebé</button>
           <button class="ocasion-btn" onclick="selOcasion(this,'Amor y Amistad')">💝 Amor y Amistad</button>
           <button class="ocasion-btn" onclick="selOcasion(this,'Día de la Madre')">🌸 Día de la Madre</button>
@@ -893,33 +893,64 @@
         <input type="hidden" id="p_ocasion" />
       </div>
 
-      <div class="grid-2">
-        <div class="field">
-          <label>Nombre del quienRecibe <span class="req">*</span></label>
-          <input type="text" id="p_nombre" placeholder="Nombre completo" />
+      <!-- CAMPOS ESPECÍFICOS SEGÚN OCASIÓN -->
+      <div id="campos-condolencias" style="display:none;">
+        <div class="grid-2">
+          <div class="field">
+            <label>Nombre del fallecido <span class="req">*</span></label>
+            <input type="text" id="p_fallecido" placeholder="Nombre completo del fallecido" />
+          </div>
+          <div class="field">
+            <label>Para quién va dirigido <span class="req">*</span></label>
+            <input type="text" id="p_dirigido" placeholder="Ej: Familia García, la señora Ana..." />
+          </div>
+          <div class="field col-full">
+            <label>Quién hace la atención</label>
+            <input type="text" id="p_nombre" placeholder="Ej: Tu amigo Carlos, La empresa XYZ..." />
+          </div>
         </div>
+        <hr class="divider">
+        <div class="subsection-title">🎨 Color de la tarjeta preimpresa</div>
         <div class="field">
-          <label>Detalle adicional</label>
-          <input type="text" id="p_detalle" placeholder="Ej: cumple 50 años, nació el 10 de mayo..." />
+          <div class="ocasion-select">
+            <button class="ocasion-btn" onclick="selColor(this,'Rosa Profundo - Un abrazo de corazón')">🌸 Rosa Profundo<br><small>Un abrazo de corazón</small></button>
+            <button class="ocasion-btn" onclick="selColor(this,'Amarillo Trigo - Todo el afecto en un abrazo')">🌾 Amarillo Trigo<br><small>Todo el afecto en un abrazo</small></button>
+            <button class="ocasion-btn" onclick="selColor(this,'Verde Oliva - Y luego del invierno llegará la primavera')">🌿 Verde Oliva<br><small>Y luego del invierno llegará la primavera</small></button>
+            <button class="ocasion-btn" onclick="selColor(this,'Azul Índigo - Sentidas condolencias')">💙 Azul Índigo<br><small>Sentidas condolencias</small></button>
+          </div>
+          <input type="hidden" id="p_color_tarjeta" />
+        </div>
+      </div>
+
+      <div id="campos-ocasion-general">
+        <div class="grid-2">
+          <div class="field">
+            <label>Para quién va dirigido <span class="req">*</span></label>
+            <input type="text" id="p_dirigido_gen" placeholder="Ej: María, el equipo de ventas..." />
+          </div>
+          <div class="field">
+            <label>Quién hace la atención</label>
+            <input type="text" id="p_nombre_gen" placeholder="Ej: Tu familia, La empresa XYZ..." />
+          </div>
+        </div>
+        <hr class="divider">
+        <div class="subsection-title">🎨 Color de la tarjeta preimpresa</div>
+        <div class="field">
+          <div class="ocasion-select">
+            <button class="ocasion-btn" onclick="selColor(this,'Esmeralda')">💚 Esmeralda</button>
+            <button class="ocasion-btn" onclick="selColor(this,'Marfil')">🤍 Marfil</button>
+            <button class="ocasion-btn" onclick="selColor(this,'Salmón')">🍑 Salmón</button>
+          </div>
+          <input type="hidden" id="p_color_tarjeta_gen" />
         </div>
       </div>
 
       <hr class="divider">
-
-      <div class="subsection-title">✉ Mensaje</div>
+      <div class="subsection-title">✉ Mensaje personalizado</div>
       <div class="field">
-        <label>Mensaje de felicitación o condolencias</label>
+        <label>Mensaje para la tarjeta</label>
         <textarea id="p_mensaje" placeholder="Escribe aquí el mensaje que irá en la tarjeta..." maxlength="170" oninput="contarCaracteres(this,'cnt_mensaje')"></textarea>
         <div style="text-align:right;font-size:.75rem;color:var(--ink-lt);margin-top:4px;"><span id="cnt_mensaje">0</span>/170 caracteres</div>
-      </div>
-      <div class="field">
-        <label>¿De parte de quién firma el mensaje?</label>
-        <input type="text" id="p_firma" placeholder="Ej: Con amor, tu familia / La empresa XYZ" />
-      </div>
-      <div class="field">
-        <label>Observaciones adicionales para el pedido</label>
-        <textarea id="p_observaciones" placeholder="Instrucciones especiales, horarios, cómo entregar..." style="min-height:70px;" maxlength="170" oninput="contarCaracteres(this,'cnt_obs')"></textarea>
-        <div style="text-align:right;font-size:.75rem;color:var(--ink-lt);margin-top:4px;"><span id="cnt_obs">0</span>/170 caracteres</div>
       </div>
 
       <div class="btn-row">
@@ -1066,72 +1097,120 @@ let state = {
 
 // ── CATÁLOGO DE PRODUCTOS (sincronizado con imágenes y Excel) ──
 const PRODUCTOS = [
-  // BONOS
-  { id:'B1', cat:'Bonos', sub:'', nombre:'Bono Plegable', precio:82000, detalle:'Portada troquelada, cinta de seda, tarjeta marcada a mano en caligrafía' },
-  { id:'B2', cat:'Bonos', sub:'', nombre:'Bono En Bolsa', precio:100000, detalle:'Plegable en bolsa de organza con cinta de seda y tarjeta marcada a mano' },
-  { id:'B3', cat:'Bonos', sub:'', nombre:'Bono En Caja', precio:147000, detalle:'Plegable en caja de cartón con cierre imán, cinta de seda y tarjeta marcada a mano' },
-  { id:'B4', cat:'Bonos', sub:'', nombre:'Bono Virtual', precio:78000, detalle:'Video animado y personalizado, se envía por mail o WhatsApp' },
-  // PLANTAS
-  { id:'P1', cat:'Acompañantes', sub:'Plantas', nombre:'Anturio', precio:150000 },
-  { id:'P2', cat:'Acompañantes', sub:'Plantas', nombre:'Bonsai', precio:150000 },
-  { id:'P3', cat:'Acompañantes', sub:'Plantas', nombre:'Orquídea', precio:150000 },
-  { id:'P4', cat:'Acompañantes', sub:'Plantas', nombre:'Siembra de Árbol', precio:148000 },
-  { id:'P5', cat:'Acompañantes', sub:'Plantas', nombre:'Matera', precio:49000 },
-  { id:'P6', cat:'Acompañantes', sub:'Plantas', nombre:'Dos Anturios en Canasta', precio:470000 },
-  { id:'P7', cat:'Acompañantes', sub:'Plantas', nombre:'Dos Orquídeas en Canasta', precio:470000 },
-  { id:'P8', cat:'Acompañantes', sub:'Plantas', nombre:'Tres Anturios en Canasta', precio:974000 },
-  { id:'P9', cat:'Acompañantes', sub:'Plantas', nombre:'Tres Orquídeas en Canasta', precio:974000 },
-  // CONSUMIBLES
-  { id:'C1', cat:'Acompañantes', sub:'Consumibles', nombre:'Chocolatina Evok', precio:83000 },
-  { id:'C2', cat:'Acompañantes', sub:'Consumibles', nombre:'Caja de Té', precio:81000 },
-  { id:'C3', cat:'Acompañantes', sub:'Consumibles', nombre:'Caja de Blondies Mikaela', precio:83000 },
-  { id:'C4', cat:'Acompañantes', sub:'Consumibles', nombre:'Bombones rellenos de Chocolate Evok No. 2', precio:126000 },
-  { id:'C5', cat:'Acompañantes', sub:'Consumibles', nombre:'Infusiones de Corazón Evok No. 3', precio:138000 },
-  { id:'C6', cat:'Acompañantes', sub:'Consumibles', nombre:'Kit Tranquilidad', precio:231000 },
-  { id:'C7', cat:'Acompañantes', sub:'Consumibles', nombre:'Amor Ancestral', precio:359000 },
-  // VELAS
-  { id:'V1', cat:'Acompañantes', sub:'Velas', nombre:'Vela de Corazón con base redonda de cemento', precio:39000 },
-  { id:'V2', cat:'Acompañantes', sub:'Velas', nombre:'Cajita con 4 velas de corazón', precio:42000 },
-  { id:'V3', cat:'Acompañantes', sub:'Velas', nombre:'Vela Corazoncitos Lata', precio:52000 },
-  { id:'V4', cat:'Acompañantes', sub:'Velas', nombre:'Vela Jarrón Mascota', precio:55000 },
-  { id:'V5', cat:'Acompañantes', sub:'Velas', nombre:'Vela en vidrio de Corazoncitos', precio:52000 },
-  { id:'V6', cat:'Acompañantes', sub:'Velas', nombre:'Vela en vidrio', precio:67000 },
-  { id:'V7', cat:'Acompañantes', sub:'Velas', nombre:'Vela dibujo corazoncitos', precio:88000 },
-  { id:'V8', cat:'Acompañantes', sub:'Velas', nombre:'Vela en cerámica del Carmen', precio:97000 },
-  // LÍNEA DE CORAZÓN
-  { id:'L1', cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Corazón Pequeño en Vidrio', precio:27000 },
-  { id:'L2', cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Plato de Corazón', precio:30000 },
-  { id:'L3', cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Manilla de Miyuki', precio:21000 },
-  { id:'L4', cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Manilla de Corazones de Nacar', precio:33000 },
-  { id:'L5', cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Corazón en Macramé Mini', precio:36000 },
-  { id:'L6', cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Corazón Mediano en Vidrio', precio:42000 },
-  { id:'L7', cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Corazón pin de vidrio', precio:42000 },
-  { id:'L8', cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Corazón orgánico pequeño', precio:86000 },
-  { id:'L9', cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Bolsa de Corazón Terapéutica', precio:84000 },
-  { id:'L10',cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Corazón Grande en Vidrio', precio:92000 },
-  { id:'L11',cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Corazón con alas', precio:100000 },
-  { id:'L12',cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Cuadro de Corazón', precio:92000 },
-  { id:'L13',cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Corazón Orgánico de Pared', precio:90000 },
-  { id:'L14',cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Collar corazón en cadena', precio:90000 },
-  { id:'L15',cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Corazón bordado en Miyuki', precio:113000 },
-  { id:'L16',cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Corazón orgánico grande', precio:120000 },
-  { id:'L17',cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Angelita de Corazón', precio:106000 },
-  { id:'L18',cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Corazón con Alas Grande', precio:138000 },
-  { id:'L19',cat:'Acompañantes', sub:'Línea de Corazón', nombre:'Escultura de Corazón', precio:188000 },
-  // OBJETOS
-  { id:'O1', cat:'Acompañantes', sub:'Objetos', nombre:'Abrazador Mini', precio:37000 },
-  { id:'O2', cat:'Acompañantes', sub:'Objetos', nombre:'Libro Cuando te sientas triste', precio:68000 },
-  { id:'O3', cat:'Acompañantes', sub:'Objetos', nombre:'Libro Fotones de Pensamientos', precio:60000 },
-  { id:'O4', cat:'Acompañantes', sub:'Objetos', nombre:'Marco con letras para niños', precio:81000 },
-  { id:'O5', cat:'Acompañantes', sub:'Objetos', nombre:'Abrazador', precio:135000 },
-  { id:'O6', cat:'Acompañantes', sub:'Objetos', nombre:'Libro mi Gata Ágata', precio:79000 },
-  // LÍNEA EMPRESARIAL
-  { id:'E1', cat:'Acompañantes', sub:'Empresarial', nombre:'Manilla de Corazón', precio:11000 },
-  { id:'E2', cat:'Acompañantes', sub:'Empresarial', nombre:'Lapicero de Corazón', precio:20000 },
-  { id:'E3', cat:'Acompañantes', sub:'Empresarial', nombre:'Paño limpiador de lentes y pantallas', precio:17000 },
-  { id:'E4', cat:'Acompañantes', sub:'Empresarial', nombre:'Pin Santiago Corazón', precio:34000 },
-  { id:'E5', cat:'Acompañantes', sub:'Empresarial', nombre:'Pin de corazón en 3D', precio:38000 },
-  // DONACIONES
+  // ── BONOS PÉSAME ──
+  { id:'BP1', cat:'Bonos Pésame', sub:'Virtual', nombre:'Bono de Pésame Virtual 2025', precio:78000, esVirtual:true,
+    img:'https://santiagocorazon.org/cdn/shop/files/MARIPOSA.jpg?v=1753372027&width=400',
+    detalle:'Video animado personalizado, se envía por email o WhatsApp' },
+  { id:'BP2', cat:'Bonos Pésame', sub:'En Sobre', nombre:'Bono de Pésame en Sobre 2025', precio:82000,
+    img:'https://santiagocorazon.org/cdn/shop/files/Amarillo_cerrado.jpg?v=1761835650&width=400',
+    detalle:'Bono en sobre con tarjeta marcada a mano en caligrafía' },
+  { id:'BP3', cat:'Bonos Pésame', sub:'En Sobre', nombre:'Bono de Pésame (colores)', precio:82000,
+    img:'https://santiagocorazon.org/cdn/shop/files/pesame-amarillo.png?v=1766072968&width=400',
+    detalle:'Elige el color de la tarjeta: Rosa Profundo, Amarillo Trigo, Verde Oliva o Azul Índigo' },
+  { id:'BP4', cat:'Bonos Pésame', sub:'En Bolsa', nombre:'Bono de Pésame en Bolsa de Organza 2025', precio:100000,
+    img:'https://santiagocorazon.org/cdn/shop/files/Amarillo_Trigo_bolsa.jpg?v=1766072968&width=400',
+    detalle:'Bono en bolsa de tela de organza' },
+  { id:'BP5', cat:'Bonos Pésame', sub:'En Caja', nombre:'Bono de Pésame en Caja con Pétalos 2025', precio:147000,
+    img:'https://santiagocorazon.org/cdn/shop/files/Amarillo_Trigo_Caja_b84075e9-f5e6-410c-9767-42216e0dd4a4.jpg?v=1766072968&width=400',
+    detalle:'Bono en caja con pétalos' },
+  { id:'BP6', cat:'Bonos Pésame', sub:'Con Vela', nombre:'Bono de Pésame + Vela Cerámica del Carmen', precio:179000,
+    img:'https://santiagocorazon.org/cdn/shop/files/Rosa_Profundo_0089d0c1-5d87-49fe-b2be-e84d4b844f9a.jpg?v=1750346705&width=400',
+    detalle:'Bono en sobre con vela en cerámica del Carmen' },
+  { id:'BP7', cat:'Bonos Pésame', sub:'Con Abrazador', nombre:'Bono de Pésame + Abrazador', precio:217000,
+    img:'https://santiagocorazon.org/cdn/shop/files/Verde_Oliva_5d8b73d2-691e-4a3c-85bf-87a388fe6938.jpg?v=1750367633&width=400',
+    detalle:'Bono en sobre con Abrazador' },
+  { id:'BP8', cat:'Bonos Pésame', sub:'Con Planta', nombre:'Bono de Pésame + Anturio', precio:232000,
+    img:'https://santiagocorazon.org/cdn/shop/files/Amarillo_Trigo_e10c9faf-0144-4b4c-9ce3-76ffbb606cb9.jpg?v=1750345085&width=400',
+    detalle:'Bono en sobre con Anturio' },
+  { id:'BP9', cat:'Bonos Pésame', sub:'Con Planta', nombre:'Bono de Pésame + Bonsai', precio:250000,
+    img:'https://santiagocorazon.org/cdn/shop/files/AzulIndigo.jpg?v=1750285393&width=400',
+    detalle:'Bono en bolsa de organza con Bonsai' },
+  { id:'BP10', cat:'Bonos Pésame', sub:'Con Planta', nombre:'Bono de Pésame + Orquídea', precio:297000,
+    img:'https://santiagocorazon.org/cdn/shop/files/Rosa_Profundo_11d80609-1586-4da0-a25a-ab8bd8567c84.jpg?v=1750200371&width=400',
+    detalle:'Bono en caja con pétalos con Orquídea' },
+
+  // ── BONOS TODA OCASIÓN ──
+  { id:'BO1', cat:'Bonos Toda Ocasión', sub:'Virtual', nombre:'Bono de Toda Ocasión Virtual', precio:78000, esVirtual:true,
+    img:'https://santiagocorazon.org/cdn/shop/files/Verde_Menta_4892f69a-25d2-4107-9169-a540043024e0.jpg?v=1751054711&width=400',
+    detalle:'Video animado y personalizado, se envía por email o WhatsApp' },
+  { id:'BO2', cat:'Bonos Toda Ocasión', sub:'En Sobre', nombre:'Bono de Toda Ocasión en Sobre', precio:82000,
+    img:'https://santiagocorazon.org/cdn/shop/files/PRODUCTOS_6_b7a25f1e-c521-4475-9d10-6e1c3291bb41.jpg?v=1761756282&width=400',
+    detalle:'Elige el color: Esmeralda, Marfil o Salmón' },
+  { id:'BO3', cat:'Bonos Toda Ocasión', sub:'En Sobre', nombre:'Arma tu Bono de Toda Ocasión', precio:82000,
+    img:'https://santiagocorazon.org/cdn/shop/files/Colores_3ac797da-8652-4908-8eac-c40f7de081bc.jpg?v=1750802807&width=400',
+    detalle:'Personaliza tu bono eligiendo color y frase' },
+  { id:'BO4', cat:'Bonos Toda Ocasión', sub:'Con Velas', nombre:'Bono + Cajita 4 Velas de Corazón', precio:124000,
+    img:'https://santiagocorazon.org/cdn/shop/files/PRODUCTOS_11_1a1fc7f6-3766-4348-874d-172ea3cf9c69.jpg?v=1761756445&width=400' },
+  { id:'BO5', cat:'Bonos Toda Ocasión', sub:'Con Chocolates', nombre:'Bono + Chocolatina Rubí Evok', precio:140000,
+    img:'https://santiagocorazon.org/cdn/shop/files/PRODUCTOS_12.jpg?v=1761756677&width=400' },
+  { id:'BO6', cat:'Bonos Toda Ocasión', sub:'Con Vela', nombre:'Bono + Vela en Vidrio', precio:144000,
+    img:'https://santiagocorazon.org/cdn/shop/files/PRODUCTOS_13_44b6b734-2fd4-49d2-8632-1b8771e774b4.jpg?v=1761756811&width=400' },
+  { id:'BO7', cat:'Bonos Toda Ocasión', sub:'Con Corazón', nombre:'Bono + Corazón Orgánico Pequeño', precio:147000,
+    img:'https://santiagocorazon.org/cdn/shop/files/PRODUCTOS_14_01a39521-18d8-4a8e-abf0-00e2da16b704.jpg?v=1761756923&width=400' },
+  { id:'BO8', cat:'Bonos Toda Ocasión', sub:'Con Blondies', nombre:'Bono + Caja de Blondies Mikaela', precio:149000,
+    img:'https://santiagocorazon.org/cdn/shop/files/PRODUCTOS_15_0f3c5802-64eb-4386-b7b6-61c9c56315cc.jpg?v=1761757015&width=400' },
+  { id:'BO9', cat:'Bonos Toda Ocasión', sub:'Con Corazón', nombre:'Bono + Corazón con Alas', precio:157000,
+    img:'https://santiagocorazon.org/cdn/shop/files/PRODUCTOS_16_b218ad8f-5385-4cfc-b94c-a0ceb94ab416.jpg?v=1761757131&width=400' },
+  { id:'BO10', cat:'Bonos Toda Ocasión', sub:'Con Vela', nombre:'Bono + Vela Cerámica del Carmen', precio:172000,
+    img:'https://santiagocorazon.org/cdn/shop/files/PRODUCTOS_17_2c2a5b32-6fc6-48ca-8c43-8b37d382392b.jpg?v=1761757300&width=400' },
+  { id:'BO11', cat:'Bonos Toda Ocasión', sub:'Con Kit', nombre:'Bono + Kit Evok No.3 Infusiones', precio:200000,
+    img:'https://santiagocorazon.org/cdn/shop/files/PRODUCTOS_21.jpg?v=1761923968&width=400' },
+  { id:'BO12', cat:'Bonos Toda Ocasión', sub:'Con Kit', nombre:'Bono + Kit Evok No.1 Pinza Metálica', precio:202000,
+    img:'https://santiagocorazon.org/cdn/shop/files/PRODUCTOS_22_6483a417-0b5b-4b0e-a66c-61a912ff0bb1.jpg?v=1761924100&width=400' },
+  { id:'BO13', cat:'Bonos Toda Ocasión', sub:'Con Corazón', nombre:'Bono + Corazón Orgánico Grande', precio:202000,
+    img:'https://santiagocorazon.org/cdn/shop/files/PRODUCTOS_18_9e378072-e2e8-4415-9440-075859a489ea.jpg?v=1761923671&width=400' },
+  { id:'BO14', cat:'Bonos Toda Ocasión', sub:'Con Kit', nombre:'Bono + Kit Evok No.2 Bombones Chocolate', precio:208000,
+    img:'https://santiagocorazon.org/cdn/shop/files/PRODUCTOS_19_cccc40ed-6604-4f91-ba19-443a2d4153ca.jpg?v=1761923778&width=400' },
+  { id:'BO15', cat:'Bonos Toda Ocasión', sub:'Con Abrazador', nombre:'Bono + Abrazador', precio:217000,
+    img:'https://santiagocorazon.org/cdn/shop/files/PRODUCTOS_20_f3eb2b3e-8595-413a-a09e-5eca142edf68.jpg?v=1761762804&width=400' },
+
+  // ── LÍNEA DE CORAZÓN Y OTROS ──
+  { id:'LC1', cat:'Otros Productos', sub:'Línea de Corazón', nombre:'Manilla de Miyuki', precio:21000,
+    img:'https://santiagocorazon.org/cdn/shop/files/Manilla_de_Miyuki.png?v=1778680470&width=400' },
+  { id:'LC2', cat:'Otros Productos', sub:'Línea de Corazón', nombre:'Corazones en Vidrio Pequeños', precio:27000,
+    img:'https://santiagocorazon.org/cdn/shop/files/corazones_vidrio_colores.png?v=1770158715&width=400' },
+  { id:'LC3', cat:'Otros Productos', sub:'Línea de Corazón', nombre:'Plato de Corazón', precio:30000,
+    img:'https://santiagocorazon.org/cdn/shop/files/Plato_de_Corazon1.png?v=1770154508&width=400' },
+  { id:'LC4', cat:'Otros Productos', sub:'Línea de Corazón', nombre:'Manilla de Corazones de Nácar', precio:33000,
+    img:'https://santiagocorazon.org/cdn/shop/files/Manilla_de_Corazones_Nacar1.png?v=1770154603&width=400' },
+  { id:'LC5', cat:'Otros Productos', sub:'Línea de Corazón', nombre:'Corazón en Macramé Mini', precio:36000,
+    img:'https://santiagocorazon.org/cdn/shop/files/PRODUCTOS_10.png?v=1770154973&width=400' },
+  { id:'LC6', cat:'Otros Productos', sub:'Objetos', nombre:'Abrazador Mini con audiolibro', precio:37000,
+    img:'https://santiagocorazon.org/cdn/shop/files/Abrazador_Mini.png?v=1778680127&width=400' },
+  { id:'LC7', cat:'Otros Productos', sub:'Velas', nombre:'Vela de Corazón con base de cemento', precio:39000,
+    img:'https://santiagocorazon.org/cdn/shop/files/2.jpg?v=1766069137&width=400' },
+  { id:'LC8', cat:'Otros Productos', sub:'Línea de Corazón', nombre:'Corazón pin de vidrio', precio:42000,
+    img:'https://santiagocorazon.org/cdn/shop/files/Pin_de_Corazon_de_Vidrio.png?v=1770154755&width=400' },
+  { id:'LC9', cat:'Otros Productos', sub:'Velas', nombre:'Cajita con 4 velas de corazón', precio:42000,
+    img:'https://santiagocorazon.org/cdn/shop/files/3_1b4c6e42-8541-4eae-9524-82f0958d2f14.jpg?v=1766069160&width=400' },
+  { id:'LC10', cat:'Otros Productos', sub:'Línea de Corazón', nombre:'Corazones en Vidrio Mediano', precio:42000,
+    img:'https://santiagocorazon.org/cdn/shop/files/Corazon_Vidrio_5.png?v=1770154704&width=400' },
+  { id:'LC11', cat:'Otros Productos', sub:'Velas', nombre:'Vela en vidrio de Corazoncitos', precio:52000,
+    img:'https://santiagocorazon.org/cdn/shop/files/6.jpg?v=1766069253&width=400' },
+  { id:'LC12', cat:'Otros Productos', sub:'Velas', nombre:'Vela Corazoncitos Lata', precio:52000,
+    img:'https://santiagocorazon.org/cdn/shop/files/PRODUCTOS_5.png?v=1770154894&width=400' },
+  { id:'LC13', cat:'Otros Productos', sub:'Velas', nombre:'Vela Jarrón Mascota', precio:55000,
+    img:'https://santiagocorazon.org/cdn/shop/files/5_7d8033b6-5057-43b0-ab40-ee4e9a8acb8a.jpg?v=1766069208&width=400' },
+  { id:'LC14', cat:'Otros Productos', sub:'Libros', nombre:'Libro Fotones de Pensamientos', precio:60000,
+    img:'https://santiagocorazon.org/cdn/shop/files/Libro_Fotones_de_Pensamientos.png?v=1778680418&width=400' },
+  { id:'LC15', cat:'Otros Productos', sub:'Velas', nombre:'Vela en vidrio', precio:67000,
+    img:'https://santiagocorazon.org/cdn/shop/files/Vela_en_Vidrio_2.png?v=1778680884&width=400' },
+  { id:'LC16', cat:'Otros Productos', sub:'Libros', nombre:'Libro Cuando te sientas triste', precio:68000,
+    img:'https://santiagocorazon.org/cdn/shop/files/Libro_Cuando_te_sientas_triste.png?v=1778680360&width=400' },
+
+  // ── LÍNEA EMPRESARIAL ──
+  { id:'LE1', cat:'Línea Empresarial', sub:'', nombre:'Manilla de Corazón', precio:11000,
+    img:'https://santiagocorazon.org/cdn/shop/files/Manilla_en_Separador.png?v=1770156046&width=400' },
+  { id:'LE2', cat:'Línea Empresarial', sub:'', nombre:'Paño Limpiador de Lentes y Pantallas', precio:17000,
+    img:'https://santiagocorazon.org/cdn/shop/files/Todos.png?v=1770156136&width=400' },
+  { id:'LE3', cat:'Línea Empresarial', sub:'', nombre:'Lapicero', precio:20000,
+    img:'https://santiagocorazon.org/cdn/shop/files/Lapicero_1.png?v=1770156089&width=400' },
+  { id:'LE4', cat:'Línea Empresarial', sub:'', nombre:'Pin Santiago Corazón', precio:34000,
+    img:'https://santiagocorazon.org/cdn/shop/files/Pin_Santiago_Corazon.png?v=1770156090&width=400' },
+  { id:'LE5', cat:'Línea Empresarial', sub:'', nombre:'Pin de corazón en 3D', precio:38000,
+    img:'https://santiagocorazon.org/cdn/shop/files/Pin_3D_en_Sobre.png?v=1770156242&width=400' },
+
+  // ── DONACIONES ──
   { id:'D1', cat:'Donaciones', sub:'', nombre:'Donación en dinero', precio:0, esDonacion:true },
   { id:'D2', cat:'Donaciones', sub:'', nombre:'Donación en especie', precio:0, esDonacion:true },
 ];
@@ -1275,6 +1354,11 @@ function validarSeccion(step) {
   }
   if(step === 4) {
     if(state.carrito.length === 0) { alert('Por favor selecciona al menos un producto.'); return false; }
+    // If only virtual products, skip envío
+    const soloVirtual = state.carrito.every(p => p.esVirtual);
+    if(soloVirtual) {
+      state.envio = { id:'EV', label:'Envío Virtual (email o WhatsApp)', precio:0 };
+    }
   }
   if(step === 5) {
     if(!state.envio) { alert('Por favor selecciona un método de envío.'); return false; }
@@ -1363,9 +1447,27 @@ function toggleMismoComprador(cb) {
 
 // ── OCASIÓN ──
 function selOcasion(btn, val) {
-  document.querySelectorAll('.ocasion-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('#ocasionBtns .ocasion-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
   $('p_ocasion').value = val;
+  state.quienRecibe.ocasion = val;
+
+  // Show/hide specific fields
+  const esPesame = val === 'Condolencias';
+  $('campos-condolencias').style.display = esPesame ? 'block' : 'none';
+  $('campos-ocasion-general').style.display = esPesame ? 'none' : 'block';
+}
+
+function selColor(btn, val) {
+  // Remove selected from sibling buttons only
+  const parent = btn.closest('.ocasion-select');
+  parent.querySelectorAll('.ocasion-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  // Set value in nearest hidden input
+  const hiddenInput = parent.nextElementSibling;
+  if(hiddenInput) hiddenInput.value = val;
+  // Store in state
+  state.quienRecibe.colorTarjeta = val;
 }
 
 // ── CATÁLOGO ──
@@ -1380,8 +1482,12 @@ function renderCatalogo(filtro = 'Todos') {
 
   $('productsGrid').innerHTML = lista.map(p => {
     const enCarrito = state.carrito.find(i => i.id === p.id);
+    const imgHTML = p.img
+      ? `<img src="${p.img}" alt="${p.nombre}" style="width:100%;height:130px;object-fit:cover;border-radius:6px 6px 0 0;margin:-14px -16px 10px;width:calc(100% + 32px);" loading="lazy" onerror="this.style.display='none'">`
+      : '';
     return `<div class="prod-card ${enCarrito?'selected':''}" onclick="toggleProducto('${p.id}')">
-      <div class="prod-cat-label">${p.sub || p.cat}</div>
+      ${imgHTML}
+      <div class="prod-cat-label">${p.sub || p.cat}${p.esVirtual ? ' · 🌐 Virtual' : ''}</div>
       <div class="prod-name">${p.nombre}</div>
       <div class="prod-price">${p.precio > 0 ? fmt(p.precio) : 'Valor libre'}</div>
     </div>`;
@@ -1517,11 +1623,7 @@ function renderOrden() {
       </div>
       <div class="orden-block">
         <h4>✨ Quien recibe la atención</h4>
-        <p>
-          <strong>${state.quienRecibe.nombre||'—'}</strong><br>
-          Ocasión: ${state.quienRecibe.ocasion||'—'}<br>
-          ${state.quienRecibe.detalle ? state.quienRecibe.detalle : ''}
-        </p>
+        <p id="orden-quien-datos"></p>
       </div>
       <div class="orden-block">
         <h4>📋 Detalles del pedido</h4>
@@ -1572,6 +1674,16 @@ function renderOrden() {
       </div>
     </div>
   `;
+
+  // Fill quien recibe data block
+  const quienEl = document.getElementById('orden-quien-datos');
+  if(quienEl) {
+    const qr = state.quienRecibe;
+    const esPesame = qr.ocasion === 'Condolencias';
+    quienEl.innerHTML = esPesame
+      ? '<strong>Fallecido: ' + (qr.nombre||'—') + '</strong><br>Para: ' + (qr.dirigido||'—') + '<br>De parte de: ' + (qr.quienAtiende||'—') + (qr.colorTarjeta ? '<br>Tarjeta: ' + qr.colorTarjeta : '')
+      : 'Ocasión: <strong>' + (qr.ocasion||'—') + '</strong><br>Para: ' + (qr.nombre||'—') + '<br>De parte de: ' + (qr.quienAtiende||'—') + (qr.colorTarjeta ? '<br>Tarjeta: ' + qr.colorTarjeta : '');
+  }
 
   // Fill comprador data block
   const compradorEl = document.getElementById('orden-comprador-datos');
