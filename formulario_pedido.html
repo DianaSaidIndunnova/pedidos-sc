@@ -827,6 +827,11 @@
     <div class="section-card">
       <div class="section-title">¿Quién <em>recibe</em> el pedido?</div>
       <div class="section-sub">La persona y lugar donde se entregará el regalo o bono.</div>
+      <div id="aviso-virtual" style="display:none;background:#fff3e0;border:1.5px solid #ffb300;border-radius:8px;padding:14px 18px;margin-bottom:20px;font-size:.88rem;color:#e65100;">
+        <strong>🌐 Estás pidiendo un Bono Virtual</strong><br>
+        Este bono llega por <strong>email o WhatsApp</strong> — no tiene envío físico. No necesitas ingresar dirección de entrega.<br>
+        <em style="font-size:.78rem;">Si quieres un bono físico, regresa al paso anterior y selecciona Bono en Sobre, Bolsa o Caja.</em>
+      </div>
 
       <label class="checkbox-row" style="margin-bottom:20px;">
         <input type="checkbox" id="mismoComprador" onchange="toggleMismoComprador(this)" />
@@ -851,11 +856,11 @@
             <label>Ciudad / Municipio</label>
             <input type="text" id="d_ciudad" placeholder="Medellín" />
           </div>
-          <div class="field col-full">
-            <label>Dirección de entrega <span class="req">*</span></label>
+          <div class="field col-full" id="field-direccion">
+            <label id="label-direccion">Dirección de entrega <span class="req">*</span></label>
             <input type="text" id="d_direccion" placeholder="Cra 45 # 23-10, Apto 301, Barrio..." />
           </div>
-          <div class="field col-full">
+          <div class="field col-full" id="field-referencia">
             <label>Referencia o indicaciones de la dirección</label>
             <input type="text" id="d_referencia" placeholder="Frente al parque, edificio azul, preguntar por..." />
           </div>
@@ -946,10 +951,10 @@
       </div>
 
       <hr class="divider">
-      <div class="subsection-title">✉ Mensaje personalizado</div>
+      <div class="subsection-title">✉ Notas adicionales al pedido</div>
       <div class="field">
         <label>Mensaje para la tarjeta</label>
-        <textarea id="p_mensaje" placeholder="Escribe aquí el mensaje que irá en la tarjeta..." maxlength="170" oninput="contarCaracteres(this,'cnt_mensaje')"></textarea>
+        <textarea id="p_mensaje" placeholder="Instrucciones especiales, preferencias de entrega, notas para quien prepara el pedido..." maxlength="170" oninput="contarCaracteres(this,'cnt_mensaje')"></textarea>
         <div style="text-align:right;font-size:.75rem;color:var(--ink-lt);margin-top:4px;"><span id="cnt_mensaje">0</span>/170 caracteres</div>
       </div>
 
@@ -1100,13 +1105,11 @@ const PRODUCTOS = [
   // ── BONOS PÉSAME ──
   { id:'BP1', cat:'Bonos Pésame', sub:'Virtual', nombre:'Bono de Pésame Virtual 2025', precio:78000, esVirtual:true,
     img:'https://santiagocorazon.org/cdn/shop/files/MARIPOSA.jpg?v=1753372027&width=400',
-    detalle:'Video animado personalizado, se envía por email o WhatsApp' },
+    detalle:'📱 BONO DIGITAL — Llega por email o WhatsApp. NO tiene envío físico ni empaque.' },
   { id:'BP2', cat:'Bonos Pésame', sub:'En Sobre', nombre:'Bono de Pésame en Sobre 2025', precio:82000,
     img:'https://santiagocorazon.org/cdn/shop/files/Amarillo_cerrado.jpg?v=1761835650&width=400',
     detalle:'Bono en sobre con tarjeta marcada a mano en caligrafía' },
-  { id:'BP3', cat:'Bonos Pésame', sub:'En Sobre', nombre:'Bono de Pésame (colores)', precio:82000,
-    img:'https://santiagocorazon.org/cdn/shop/files/pesame-amarillo.png?v=1766072968&width=400',
-    detalle:'Elige el color de la tarjeta: Rosa Profundo, Amarillo Trigo, Verde Oliva o Azul Índigo' },
+
   { id:'BP4', cat:'Bonos Pésame', sub:'En Bolsa', nombre:'Bono de Pésame en Bolsa de Organza 2025', precio:100000,
     img:'https://santiagocorazon.org/cdn/shop/files/Amarillo_Trigo_bolsa.jpg?v=1766072968&width=400',
     detalle:'Bono en bolsa de tela de organza' },
@@ -1132,7 +1135,7 @@ const PRODUCTOS = [
   // ── BONOS TODA OCASIÓN ──
   { id:'BO1', cat:'Bonos Toda Ocasión', sub:'Virtual', nombre:'Bono de Toda Ocasión Virtual', precio:78000, esVirtual:true,
     img:'https://santiagocorazon.org/cdn/shop/files/Verde_Menta_4892f69a-25d2-4107-9169-a540043024e0.jpg?v=1751054711&width=400',
-    detalle:'Video animado y personalizado, se envía por email o WhatsApp' },
+    detalle:'📱 BONO DIGITAL — Llega por email o WhatsApp. NO tiene envío físico ni empaque.' },
   { id:'BO2', cat:'Bonos Toda Ocasión', sub:'En Sobre', nombre:'Bono de Toda Ocasión en Sobre', precio:82000,
     img:'https://santiagocorazon.org/cdn/shop/files/PRODUCTOS_6_b7a25f1e-c521-4475-9d10-6e1c3291bb41.jpg?v=1761756282&width=400',
     detalle:'Elige el color: Esmeralda, Marfil o Salmón' },
@@ -1274,6 +1277,18 @@ function irA(step) {
   });
 
   window.scrollTo({top:0, behavior:'smooth'});
+
+  // Show/hide virtual warning and address fields
+  if(step === 2) {
+    const tieneVirtual = state.carrito && state.carrito.some(p => p.esVirtual);
+    const soloVirtual = state.carrito && state.carrito.length > 0 && state.carrito.every(p => p.esVirtual);
+    const avisoEl = $('aviso-virtual');
+    const dirEl = $('field-direccion');
+    const refEl = $('field-referencia');
+    if(avisoEl) avisoEl.style.display = soloVirtual ? 'block' : 'none';
+    if(dirEl) dirEl.style.display = soloVirtual ? 'none' : 'block';
+    if(refEl) refEl.style.display = soloVirtual ? 'none' : 'block';
+  }
 }
 
 // ── VALIDACIONES ──
@@ -1324,10 +1339,11 @@ function validarSeccion(step) {
     }
   }
   if(step === 2) {
+    const soloVirtualVal = state.carrito && state.carrito.length > 0 && state.carrito.every(p => p.esVirtual);
     if(!$('mismoComprador').checked) {
       if(!$('d_nombres').value.trim()) { alert('Por favor ingresa los nombres del destinatario.'); return false; }
       if(!$('d_celular').value.trim()) { alert('Por favor ingresa el celular del destinatario.'); return false; }
-      if(!$('d_direccion').value.trim()) { alert('Por favor ingresa la dirección de entrega.'); return false; }
+      if(!soloVirtualVal && !$('d_direccion').value.trim()) { alert('Por favor ingresa la dirección de entrega.'); return false; }
     }
     state.destinatario = $('mismoComprador').checked
       ? { ...state.comprador, direccion:'(Mismo comprador)', referencia:'' }
