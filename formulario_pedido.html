@@ -1342,15 +1342,31 @@ function validarSeccion(step) {
   }
   if(step === 3) {
     if(!$('p_ocasion').value) { alert('Por favor selecciona la ocasión.'); return false; }
-    if(!$('p_nombre').value.trim()) { alert('Por favor ingresa el nombre del quienRecibe.'); return false; }
-    state.quienRecibe = {
-      ocasion: $('p_ocasion').value,
-      nombre: $('p_nombre').value.trim(),
-      detalle: $('p_detalle').value.trim(),
-      mensaje: $('p_mensaje').value.trim(),
-      firma: $('p_firma').value.trim(),
-      observaciones: $('p_observaciones').value.trim()
-    };
+    const esPesame = state.quienRecibe.ocasion === 'Condolencias';
+    if(esPesame) {
+      if(!$('p_fallecido') || !$('p_fallecido').value.trim()) { alert('Por favor ingresa el nombre del fallecido.'); return false; }
+      if(!$('p_dirigido') || !$('p_dirigido').value.trim()) { alert('Por favor indica para quién va dirigido.'); return false; }
+      state.quienRecibe = {
+        ocasion: $('p_ocasion').value,
+        nombre: $('p_fallecido').value.trim(),
+        dirigido: $('p_dirigido').value.trim(),
+        quienAtiende: $('p_nombre') ? $('p_nombre').value.trim() : '',
+        colorTarjeta: $('p_color_tarjeta') ? $('p_color_tarjeta').value : '',
+        mensaje: $('p_mensaje') ? $('p_mensaje').value.trim() : '',
+        firma: '', observaciones: ''
+      };
+    } else {
+      if(!$('p_dirigido_gen') || !$('p_dirigido_gen').value.trim()) { alert('Por favor indica para quién va dirigido.'); return false; }
+      state.quienRecibe = {
+        ocasion: $('p_ocasion').value,
+        nombre: $('p_dirigido_gen').value.trim(),
+        dirigido: $('p_dirigido_gen').value.trim(),
+        quienAtiende: $('p_nombre_gen') ? $('p_nombre_gen').value.trim() : '',
+        colorTarjeta: $('p_color_tarjeta_gen') ? $('p_color_tarjeta_gen').value : '',
+        mensaje: $('p_mensaje') ? $('p_mensaje').value.trim() : '',
+        firma: '', observaciones: ''
+      };
+    }
   }
   if(step === 4) {
     if(state.carrito.length === 0) { alert('Por favor selecciona al menos un producto.'); return false; }
