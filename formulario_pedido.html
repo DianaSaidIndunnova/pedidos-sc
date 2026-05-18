@@ -1024,15 +1024,31 @@ function irA(step) {
   $('btnAtras').style.display = step <= 1 ? 'none' : 'flex';
 
   // Update siguiente button text
-  $('btnSiguiente').textContent = step >= 6 ? '✓ Confirmar y Guardar' : 'Siguiente →';
-  if(step >= 7) $('totalBar').style.display = 'none';
+  if(step === 7) {
+    $('btnSiguiente').textContent = '✓ Confirmar y Guardar';
+    // Add print button next to confirm
+    let printBtn = document.getElementById('btnImprimir');
+    if(!printBtn) {
+      printBtn = document.createElement('button');
+      printBtn.id = 'btnImprimir';
+      printBtn.className = 'btn btn-secondary';
+      printBtn.textContent = '🖨 Imprimir';
+      printBtn.onclick = imprimirOrden;
+      $('btnSiguiente').parentNode.insertBefore(printBtn, $('btnSiguiente'));
+    }
+  } else {
+    $('btnSiguiente').textContent = 'Siguiente →';
+    const printBtn = document.getElementById('btnImprimir');
+    if(printBtn) printBtn.remove();
+  }
+  if(step >= 8) $('totalBar').style.display = 'none';
 
   actualizarTotal();
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
 function irSiguiente(skip = false) {
-  if(state.step >= 7) { confirmarPedido(); return; }
+  if(state.step === 7) { confirmarPedido(); return; }
   if(skip || validar(state.step)) irA(state.step + 1);
 }
 
