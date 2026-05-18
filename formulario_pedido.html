@@ -670,13 +670,13 @@ textarea { resize: vertical; min-height: 80px; }
   <div class="section-card">
     <div class="section-step-label">Paso 2 de 7</div>
     <div class="section-title">¿Quién <em>recibe</em>?</div>
-    <div class="section-sub">Datos de entrega del pedido.</div>
+    <div class="section-sub">Datos de la persona que recibirá el pedido.</div>
 
     <div class="virtual-alert" id="aviso-virtual">
       🌐 <strong>Estás pidiendo un Bono Virtual</strong> — llega por email o WhatsApp. No necesitas dirección física.
     </div>
 
-    <label class="tipo-card" style="flex-direction:row;gap:10px;padding:14px 16px;margin-bottom:16px;cursor:pointer;display:flex;align-items:center;">
+    <label style="display:flex;align-items:center;gap:10px;padding:14px 16px;border:2px solid var(--border);border-radius:10px;margin-bottom:16px;cursor:pointer;background:var(--white);">
       <input type="checkbox" id="mismoComprador" onchange="toggleMismo(this)" style="width:auto;accent-color:var(--pink);">
       <span style="font-size:.87rem;color:var(--ink-mid);">El destinatario soy yo mismo</span>
     </label>
@@ -695,14 +695,13 @@ textarea { resize: vertical; min-height: 80px; }
   </div>
 </div>
 
-<!-- ══ SEC 3: TARJETA / MOTIVO ══ -->
 <div class="section" id="sec-3">
   <div class="section-card">
     <div class="section-step-label">Paso 3 de 7</div>
     <div class="section-title">¿Qué tipo de <em>artículo</em> buscas?</div>
-    <div class="section-sub">Selecciona el tipo y te pedimos la información del bono.</div>
+    <div class="section-sub">Selecciona el tipo y te pedimos los datos necesarios.</div>
 
-    <!-- 3.1 TIPO DE ARTÍCULO -->
+    <!-- 3.1 BOTONES TIPO DE ARTÍCULO — aparecen primero -->
     <div class="motivo-grid" id="motivoBtns">
       <button class="motivo-btn" onclick="selMotivo(this,'Condolencias')">🕊 Pésame / Condolencias</button>
       <button class="motivo-btn" onclick="selMotivo(this,'Cumpleaños')">🎂 Cumpleaños</button>
@@ -718,7 +717,7 @@ textarea { resize: vertical; min-height: 80px; }
     </div>
     <input type="hidden" id="p_motivo">
 
-    <!-- 3.2 CAMPOS SEGÚN TIPO (ocultos hasta elegir) -->
+    <!-- 3.2 CAMPOS SEGÚN TIPO — ocultos hasta que el usuario elija -->
 
     <!-- PÉSAME -->
     <div id="bloque-pesame" style="display:none;">
@@ -753,7 +752,7 @@ textarea { resize: vertical; min-height: 80px; }
       </div>
     </div>
 
-    <!-- TODA OCASIÓN (Cumpleaños, Bebé, Amor, etc.) -->
+    <!-- TODA OCASIÓN -->
     <div id="bloque-general" style="display:none;">
       <hr class="divider">
       <div class="grid-2">
@@ -780,7 +779,7 @@ textarea { resize: vertical; min-height: 80px; }
       </div>
     </div>
 
-    <!-- DONACIÓN (sin campos adicionales ni tarjeta) -->
+    <!-- DONACIÓN -->
     <div id="bloque-donacion" style="display:none;">
       <hr class="divider">
       <div style="background:var(--pink-lt);border-radius:10px;padding:16px 20px;font-size:.88rem;color:var(--ink-mid);">
@@ -790,7 +789,7 @@ textarea { resize: vertical; min-height: 80px; }
 
     <input type="hidden" id="p_tarjeta">
 
-    <!-- NOTAS (aparece para todos excepto donación) -->
+    <!-- NOTAS (para todos excepto donación) -->
     <div id="bloque-notas" style="display:none;margin-top:20px;">
       <hr class="divider">
       <div class="subsection-title">📝 Notas adicionales al pedido</div>
@@ -802,7 +801,6 @@ textarea { resize: vertical; min-height: 80px; }
   </div>
 </div>
 
-<!-- ══ SEC 4: EMPAQUE ══ -->
 <div class="section" id="sec-4">
   <div class="section-card">
     <div class="section-step-label">Paso 4 de 7</div>
