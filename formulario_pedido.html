@@ -789,8 +789,19 @@ textarea { resize: vertical; min-height: 80px; }
 
     <input type="hidden" id="p_tarjeta">
 
-    <!-- NOTAS (para todos excepto donación) -->
+    <!-- MENSAJE Y NOTAS (para todos excepto donación) -->
     <div id="bloque-notas" style="display:none;margin-top:20px;">
+      <hr class="divider">
+      <div class="subsection-title">✉ Mensaje para la tarjeta</div>
+      <div class="field">
+        <label>Mensaje personalizado <span style="font-size:.72rem;font-weight:400;text-transform:none;color:var(--ink-lt);">(se escribe a mano en caligrafía en la tarjeta)</span></label>
+        <textarea id="p_mensaje" placeholder="Escribe aquí el mensaje que irá en la tarjeta..." maxlength="170" oninput="contarChars(this,'cnt_mensaje')"></textarea>
+        <div style="text-align:right;font-size:.73rem;color:var(--ink-lt);margin-top:4px;"><span id="cnt_mensaje">0</span>/170</div>
+      </div>
+      <div class="field">
+        <label>¿De parte de quién?</label>
+        <input type="text" id="p_firma" placeholder="Tu familia, La empresa XYZ...">
+      </div>
       <hr class="divider">
       <div class="subsection-title">📝 Notas adicionales al pedido</div>
       <div class="field">
@@ -921,6 +932,8 @@ let state = {
   quienAtiende: '',
   fallecido: '',
   tarjeta: '',
+  mensaje: '',
+  firma: '',
   notas: '',
   empaque: null,
   acompanante: null,
@@ -996,6 +1009,8 @@ const ENVIOS = [
 document.addEventListener('DOMContentLoaded', () => {
   $('headerDate').textContent = today();
   $('totalBar').style.display = 'none';
+  // Pre-calentar el Apps Script para que la búsqueda sea más rápida
+  fetch(SCRIPT_URL + '?action=ping').catch(() => {});
 });
 
 // ── STEP NAVIGATION ──
@@ -1070,7 +1085,22 @@ function irA(step) {
 
 function irSiguiente(skip = false) {
   if(state.step === 7) { confirmarPedido(); return; }
-  if(skip || validar(state.step)) irA(state.step + 1);
+  if(!skip && !validar(state.step)) return;
+
+  let nextStep = state.step + 1;
+
+  // Donación: salta empaque(4), acompañante(5) y envío(6), va directo a orden(7)
+  if(state.esDonacion && nextStep >= 4 && nextStep <= 6) {
+    state.envio = { label: 'Donación — sin envío físico', precio: 0 };
+    nextStep = 7;
+  }
+  // Virtual: salta envío(6), va directo a orden(7)
+  else if(state.soloVirtual && nextStep === 6) {
+    state.envio = { label: 'Envío Virtual (email o WhatsApp)', precio: 0 };
+    nextStep = 7;
+  }
+
+  irA(nextStep);
 }
 
 function irAtras() {
@@ -1156,11 +1186,13 @@ function validar(step) {
     if(esPesame && !$('p_fallecido').value.trim()) { alert('Por favor ingresa el nombre del fallecido.'); return false; }
     if(esPesame && !$('p_dirigido').value.trim()) { alert('Por favor indica para quién va dirigido.'); return false; }
     if(!esPesame && !$('p_dirigido_gen').value.trim()) { alert('Por favor indica para quién va dirigido.'); return false; }
-    state.dirigido = esPesame ? $('p_dirigido').value.trim() : $('p_dirigido_gen').value.trim();
-    state.quienAtiende = esPesame ? $('p_quien_atiende').value.trim() : $('p_quien_gen').value.trim();
-    state.fallecido = esPesame ? $('p_fallecido').value.trim() : '';
-    state.tarjeta = $('p_tarjeta').value;
-    state.notas = $('p_notas').value.trim();
+    state.dirigido    = esPesame ? $('p_dirigido').value.trim() : $('p_dirigido_gen').value.trim();
+    state.quienAtiende= esPesame ? $('p_quien_atiende').value.trim() : $('p_quien_gen').value.trim();
+    state.fallecido   = esPesame ? $('p_fallecido').value.trim() : '';
+    state.tarjeta     = $('p_tarjeta').value;
+    state.mensaje     = $('p_mensaje') ? $('p_mensaje').value.trim() : '';
+    state.firma       = $('p_firma')   ? $('p_firma').value.trim()   : '';
+    state.notas       = $('p_notas')   ? $('p_notas').value.trim()   : '';
     return true;
   }
   if(step === 4) {
@@ -1478,15 +1510,15 @@ async function confirmarPedido() {
     comprador: state.comprador,
     destinatario: state.destinatario,
     quienRecibe: {
-      ocasion: state.motivo,
-      nombre: state.dirigido,
-      dirigido: state.dirigido,
+      ocasion:      state.motivo,
+      nombre:       state.dirigido,
+      dirigido:     state.dirigido,
       quienAtiende: state.quienAtiende,
       colorTarjeta: state.tarjeta,
-      fallecido: state.fallecido,
-      mensaje: '',
-      firma: '',
-      observaciones: state.notas
+      fallecido:    state.fallecido,
+      mensaje:      state.mensaje || '',
+      firma:        state.firma   || '',
+      observaciones:state.notas   || ''
     },
     carrito: [
       { nombre: 'Bono ' + (state.motivo==='Condolencias'?'Pésame':'Toda Ocasión'), precio: PRECIO_BASE, qty:1, cat:'Bono' },
