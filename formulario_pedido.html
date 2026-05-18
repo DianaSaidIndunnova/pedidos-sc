@@ -699,28 +699,10 @@ textarea { resize: vertical; min-height: 80px; }
 <div class="section" id="sec-3">
   <div class="section-card">
     <div class="section-step-label">Paso 3 de 7</div>
-    <div class="section-title">¿Cuál es el <em>motivo</em>?</div>
-    <div class="section-sub">Selecciona primero para quién va y quién hace la atención, luego elige el motivo y el color de la tarjeta.</div>
+    <div class="section-title">¿Qué tipo de <em>artículo</em> buscas?</div>
+    <div class="section-sub">Selecciona el tipo y te pedimos la información del bono.</div>
 
-    <!-- Para quién va / quién hace la atención -->
-    <div id="bloque-pesame" style="display:none;">
-      <div class="grid-2">
-        <div class="field"><label>Nombre del fallecido <span class="req">*</span></label><input type="text" id="p_fallecido" placeholder="Nombre completo"></div>
-        <div class="field"><label>Para quién va dirigido <span class="req">*</span></label><input type="text" id="p_dirigido" placeholder="Familia García, la señora Ana..."></div>
-        <div class="field col-full"><label>Quién hace la atención</label><input type="text" id="p_quien_atiende" placeholder="Tu amigo Carlos, La empresa XYZ..."></div>
-      </div>
-    </div>
-    <div id="bloque-general">
-      <div class="grid-2">
-        <div class="field"><label>Para quién va dirigido <span class="req">*</span></label><input type="text" id="p_dirigido_gen" placeholder="María, el equipo de ventas..."></div>
-        <div class="field"><label>Quién hace la atención</label><input type="text" id="p_quien_gen" placeholder="Tu familia, La empresa XYZ..."></div>
-      </div>
-    </div>
-
-    <hr class="divider">
-
-    <!-- Motivo -->
-    <div class="subsection-title">Motivo</div>
+    <!-- 3.1 TIPO DE ARTÍCULO -->
     <div class="motivo-grid" id="motivoBtns">
       <button class="motivo-btn" onclick="selMotivo(this,'Condolencias')">🕊 Pésame / Condolencias</button>
       <button class="motivo-btn" onclick="selMotivo(this,'Cumpleaños')">🎂 Cumpleaños</button>
@@ -732,12 +714,23 @@ textarea { resize: vertical; min-height: 80px; }
       <button class="motivo-btn" onclick="selMotivo(this,'Recuperación')">💊 Recuperación</button>
       <button class="motivo-btn" onclick="selMotivo(this,'Navidad')">🎄 Navidad</button>
       <button class="motivo-btn" onclick="selMotivo(this,'Donación')">❤ Donación</button>
-      <button class="motivo-btn" onclick="selMotivo(this,'Otra')">✦ Otra</button>
+      <button class="motivo-btn" onclick="selMotivo(this,'Otra')">✦ Otra ocasión</button>
     </div>
     <input type="hidden" id="p_motivo">
 
-    <!-- Color de tarjeta (se muestra según motivo) -->
-    <div id="bloque-tarjeta-pesame" style="display:none;">
+    <!-- 3.2 CAMPOS SEGÚN TIPO (ocultos hasta elegir) -->
+
+    <!-- PÉSAME -->
+    <div id="bloque-pesame" style="display:none;">
+      <hr class="divider">
+      <div class="grid-2">
+        <div class="field"><label>Nombre del fallecido <span class="req">*</span></label>
+          <input type="text" id="p_fallecido" placeholder="Nombre completo del fallecido"></div>
+        <div class="field"><label>Para quién va dirigido <span class="req">*</span></label>
+          <input type="text" id="p_dirigido" placeholder="Familia García, la señora Ana..."></div>
+        <div class="field col-full"><label>Quién hace la atención</label>
+          <input type="text" id="p_quien_atiende" placeholder="Tu amigo Carlos, La empresa XYZ..."></div>
+      </div>
       <hr class="divider">
       <div class="subsection-title">Color de tarjeta preimpresa</div>
       <div class="tarjeta-grid">
@@ -760,7 +753,15 @@ textarea { resize: vertical; min-height: 80px; }
       </div>
     </div>
 
-    <div id="bloque-tarjeta-general" style="display:none;">
+    <!-- TODA OCASIÓN (Cumpleaños, Bebé, Amor, etc.) -->
+    <div id="bloque-general" style="display:none;">
+      <hr class="divider">
+      <div class="grid-2">
+        <div class="field"><label>Para quién va dirigido <span class="req">*</span></label>
+          <input type="text" id="p_dirigido_gen" placeholder="María, el equipo de ventas..."></div>
+        <div class="field"><label>Quién hace la atención</label>
+          <input type="text" id="p_quien_gen" placeholder="Tu familia, La empresa XYZ..."></div>
+      </div>
       <hr class="divider">
       <div class="subsection-title">Color de tarjeta preimpresa</div>
       <div class="tarjeta-grid">
@@ -778,10 +779,19 @@ textarea { resize: vertical; min-height: 80px; }
         </div>
       </div>
     </div>
+
+    <!-- DONACIÓN (sin campos adicionales ni tarjeta) -->
+    <div id="bloque-donacion" style="display:none;">
+      <hr class="divider">
+      <div style="background:var(--pink-lt);border-radius:10px;padding:16px 20px;font-size:.88rem;color:var(--ink-mid);">
+        ❤ Gracias por tu donación. No se requiere información adicional de tarjeta ni entrega física.
+      </div>
+    </div>
+
     <input type="hidden" id="p_tarjeta">
 
-    <!-- Notas adicionales -->
-    <div id="bloque-notas" style="margin-top:20px;">
+    <!-- NOTAS (aparece para todos excepto donación) -->
+    <div id="bloque-notas" style="display:none;margin-top:20px;">
       <hr class="divider">
       <div class="subsection-title">📝 Notas adicionales al pedido</div>
       <div class="field">
@@ -1544,110 +1554,4 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 </body>
-</html  <div class="section" id="sec-3">
-  <div class="section-card">
-    <div class="section-step-label">Paso 3 de 7</div>
-    <div class="section-title">¿Qué tipo de <em>artículo</em> buscas?</div>
-    <div class="section-sub">Selecciona el tipo y te pedimos la información del bono.</div>
-
-    <!-- 3.1 TIPO DE ARTÍCULO -->
-    <div class="motivo-grid" id="motivoBtns">
-      <button class="motivo-btn" onclick="selMotivo(this,'Condolencias')">🕊 Pésame / Condolencias</button>
-      <button class="motivo-btn" onclick="selMotivo(this,'Cumpleaños')">🎂 Cumpleaños</button>
-      <button class="motivo-btn" onclick="selMotivo(this,'Bebé')">👶 Bebé</button>
-      <button class="motivo-btn" onclick="selMotivo(this,'Amor y Amistad')">💝 Amor y Amistad</button>
-      <button class="motivo-btn" onclick="selMotivo(this,'Día de la Madre')">🌸 Día de la Madre</button>
-      <button class="motivo-btn" onclick="selMotivo(this,'Día del Padre')">👔 Día del Padre</button>
-      <button class="motivo-btn" onclick="selMotivo(this,'Graduación')">🎓 Graduación</button>
-      <button class="motivo-btn" onclick="selMotivo(this,'Recuperación')">💊 Recuperación</button>
-      <button class="motivo-btn" onclick="selMotivo(this,'Navidad')">🎄 Navidad</button>
-      <button class="motivo-btn" onclick="selMotivo(this,'Donación')">❤ Donación</button>
-      <button class="motivo-btn" onclick="selMotivo(this,'Otra')">✦ Otra ocasión</button>
-    </div>
-    <input type="hidden" id="p_motivo">
-
-    <!-- 3.2 CAMPOS SEGÚN TIPO (ocultos hasta elegir) -->
-
-    <!-- PÉSAME -->
-    <div id="bloque-pesame" style="display:none;">
-      <hr class="divider">
-      <div class="grid-2">
-        <div class="field"><label>Nombre del fallecido <span class="req">*</span></label>
-          <input type="text" id="p_fallecido" placeholder="Nombre completo del fallecido"></div>
-        <div class="field"><label>Para quién va dirigido <span class="req">*</span></label>
-          <input type="text" id="p_dirigido" placeholder="Familia García, la señora Ana..."></div>
-        <div class="field col-full"><label>Quién hace la atención</label>
-          <input type="text" id="p_quien_atiende" placeholder="Tu amigo Carlos, La empresa XYZ..."></div>
-      </div>
-      <hr class="divider">
-      <div class="subsection-title">Color de tarjeta preimpresa</div>
-      <div class="tarjeta-grid">
-        <div class="tarjeta-card" onclick="selTarjeta(this,'Rosa Profundo - Un abrazo de corazón')">
-          <img src="https://santiagocorazon.org/cdn/shop/files/Rosa_Profundo_0089d0c1-5d87-49fe-b2be-e84d4b844f9a.jpg?v=1750346705&width=400" alt="Rosa Profundo" onerror="this.style.display='none'">
-          <div class="tarjeta-info"><div class="tarjeta-frase">Un abrazo de corazón</div><div class="tarjeta-color">Rosa Profundo</div></div>
-        </div>
-        <div class="tarjeta-card" onclick="selTarjeta(this,'Amarillo Trigo - Todo el afecto en un abrazo')">
-          <img src="https://santiagocorazon.org/cdn/shop/files/Amarillo_Trigo_e10c9faf-0144-4b4c-9ce3-76ffbb606cb9.jpg?v=1750345085&width=400" alt="Amarillo Trigo" onerror="this.style.display='none'">
-          <div class="tarjeta-info"><div class="tarjeta-frase">Todo el afecto en un abrazo</div><div class="tarjeta-color">Amarillo Trigo</div></div>
-        </div>
-        <div class="tarjeta-card" onclick="selTarjeta(this,'Verde Oliva - Y luego del invierno llegará la primavera')">
-          <img src="https://santiagocorazon.org/cdn/shop/files/Verde_Oliva_5d8b73d2-691e-4a3c-85bf-87a388fe6938.jpg?v=1750367633&width=400" alt="Verde Oliva" onerror="this.style.display='none'">
-          <div class="tarjeta-info"><div class="tarjeta-frase">Y luego del invierno llegará la primavera</div><div class="tarjeta-color">Verde Oliva</div></div>
-        </div>
-        <div class="tarjeta-card" onclick="selTarjeta(this,'Azul Índigo - Sentidas condolencias')">
-          <img src="https://santiagocorazon.org/cdn/shop/files/AzulIndigo.jpg?v=1750285393&width=400" alt="Azul Índigo" onerror="this.style.display='none'">
-          <div class="tarjeta-info"><div class="tarjeta-frase">Sentidas condolencias</div><div class="tarjeta-color">Azul Índigo</div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TODA OCASIÓN (Cumpleaños, Bebé, Amor, etc.) -->
-    <div id="bloque-general" style="display:none;">
-      <hr class="divider">
-      <div class="grid-2">
-        <div class="field"><label>Para quién va dirigido <span class="req">*</span></label>
-          <input type="text" id="p_dirigido_gen" placeholder="María, el equipo de ventas..."></div>
-        <div class="field"><label>Quién hace la atención</label>
-          <input type="text" id="p_quien_gen" placeholder="Tu familia, La empresa XYZ..."></div>
-      </div>
-      <hr class="divider">
-      <div class="subsection-title">Color de tarjeta preimpresa</div>
-      <div class="tarjeta-grid">
-        <div class="tarjeta-card" onclick="selTarjeta(this,'Esmeralda')">
-          <img src="https://santiagocorazon.org/cdn/shop/files/PRODUCTOS_6_b7a25f1e-c521-4475-9d10-6e1c3291bb41.jpg?v=1761756282&width=400" alt="Esmeralda" onerror="this.style.display='none'">
-          <div class="tarjeta-info"><div class="tarjeta-frase">Esmeralda</div></div>
-        </div>
-        <div class="tarjeta-card" onclick="selTarjeta(this,'Marfil')">
-          <img src="https://santiagocorazon.org/cdn/shop/files/Colores_3ac797da-8652-4908-8eac-c40f7de081bc.jpg?v=1750802807&width=400" alt="Marfil" onerror="this.style.display='none'">
-          <div class="tarjeta-info"><div class="tarjeta-frase">Marfil</div></div>
-        </div>
-        <div class="tarjeta-card" onclick="selTarjeta(this,'Salmón')">
-          <img src="https://santiagocorazon.org/cdn/shop/files/PRODUCTOS_11_1a1fc7f6-3766-4348-874d-172ea3cf9c69.jpg?v=1761756445&width=400" alt="Salmón" onerror="this.style.display='none'">
-          <div class="tarjeta-info"><div class="tarjeta-frase">Salmón</div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- DONACIÓN (sin campos adicionales ni tarjeta) -->
-    <div id="bloque-donacion" style="display:none;">
-      <hr class="divider">
-      <div style="background:var(--pink-lt);border-radius:10px;padding:16px 20px;font-size:.88rem;color:var(--ink-mid);">
-        ❤ Gracias por tu donación. No se requiere información adicional de tarjeta ni entrega física.
-      </div>
-    </div>
-
-    <input type="hidden" id="p_tarjeta">
-
-    <!-- NOTAS (aparece para todos excepto donación) -->
-    <div id="bloque-notas" style="display:none;margin-top:20px;">
-      <hr class="divider">
-      <div class="subsection-title">📝 Notas adicionales al pedido</div>
-      <div class="field">
-        <textarea id="p_notas" placeholder="Instrucciones especiales, preferencias de entrega..." maxlength="170" oninput="contarChars(this,'cnt_notas')"></textarea>
-        <div style="text-align:right;font-size:.73rem;color:var(--ink-lt);margin-top:4px;"><span id="cnt_notas">0</span>/170</div>
-      </div>
-    </div>
-  </div>
-</div>
-
->
+</html  >
