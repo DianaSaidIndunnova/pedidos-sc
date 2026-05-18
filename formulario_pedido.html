@@ -1012,6 +1012,19 @@ function irA(step) {
     $('sec-' + step).classList.add('active');
     $('totalBar').style.display = 'flex';
     $('progressWrap').style.display = 'block';
+    // Render empaques every time step 4 is shown
+    if(step === 4) {
+      const esPesame = state.motivo === 'Condolencias';
+      renderEmpaques(esPesame ? EMPAQUES_PESAME : EMPAQUES_GENERAL);
+    }
+    // Render acompañantes every time step 5 is shown
+    if(step === 5) {
+      renderAcompanantes('Plantas');
+    }
+    // Render envios every time step 6 is shown
+    if(step === 6) {
+      renderEnvios();
+    }
   } else {
     $('sec-resumen').classList.add('active');
     $('totalBar').style.display = 'flex';
