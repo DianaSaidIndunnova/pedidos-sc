@@ -1547,11 +1547,10 @@ document.addEventListener('DOMContentLoaded', () => {
 </html  <div class="section" id="sec-3">
   <div class="section-card">
     <div class="section-step-label">Paso 3 de 7</div>
-    <div class="section-title">¿Cuál es el <em>motivo</em>?</div>
-    <div class="section-sub">Selecciona el motivo y te pedimos la información necesaria.</div>
+    <div class="section-title">¿Qué tipo de <em>artículo</em> buscas?</div>
+    <div class="section-sub">Selecciona el tipo y te pedimos la información del bono.</div>
 
-    <!-- 1. MOTIVO PRIMERO -->
-    <div class="subsection-title">Motivo</div>
+    <!-- 3.1 TIPO DE ARTÍCULO -->
     <div class="motivo-grid" id="motivoBtns">
       <button class="motivo-btn" onclick="selMotivo(this,'Condolencias')">🕊 Pésame / Condolencias</button>
       <button class="motivo-btn" onclick="selMotivo(this,'Cumpleaños')">🎂 Cumpleaños</button>
@@ -1563,30 +1562,23 @@ document.addEventListener('DOMContentLoaded', () => {
       <button class="motivo-btn" onclick="selMotivo(this,'Recuperación')">💊 Recuperación</button>
       <button class="motivo-btn" onclick="selMotivo(this,'Navidad')">🎄 Navidad</button>
       <button class="motivo-btn" onclick="selMotivo(this,'Donación')">❤ Donación</button>
-      <button class="motivo-btn" onclick="selMotivo(this,'Otra')">✦ Otra</button>
+      <button class="motivo-btn" onclick="selMotivo(this,'Otra')">✦ Otra ocasión</button>
     </div>
     <input type="hidden" id="p_motivo">
 
-    <!-- 2. CAMPOS SEGÚN MOTIVO (ocultos hasta elegir) -->
+    <!-- 3.2 CAMPOS SEGÚN TIPO (ocultos hasta elegir) -->
+
+    <!-- PÉSAME -->
     <div id="bloque-pesame" style="display:none;">
       <hr class="divider">
       <div class="grid-2">
-        <div class="field"><label>Nombre del fallecido <span class="req">*</span></label><input type="text" id="p_fallecido" placeholder="Nombre completo"></div>
-        <div class="field"><label>Para quién va dirigido <span class="req">*</span></label><input type="text" id="p_dirigido" placeholder="Familia García, la señora Ana..."></div>
-        <div class="field col-full"><label>Quién hace la atención</label><input type="text" id="p_quien_atiende" placeholder="Tu amigo Carlos, La empresa XYZ..."></div>
+        <div class="field"><label>Nombre del fallecido <span class="req">*</span></label>
+          <input type="text" id="p_fallecido" placeholder="Nombre completo del fallecido"></div>
+        <div class="field"><label>Para quién va dirigido <span class="req">*</span></label>
+          <input type="text" id="p_dirigido" placeholder="Familia García, la señora Ana..."></div>
+        <div class="field col-full"><label>Quién hace la atención</label>
+          <input type="text" id="p_quien_atiende" placeholder="Tu amigo Carlos, La empresa XYZ..."></div>
       </div>
-    </div>
-
-    <div id="bloque-general" style="display:none;">
-      <hr class="divider">
-      <div class="grid-2">
-        <div class="field"><label>Para quién va dirigido <span class="req">*</span></label><input type="text" id="p_dirigido_gen" placeholder="María, el equipo de ventas..."></div>
-        <div class="field"><label>Quién hace la atención</label><input type="text" id="p_quien_gen" placeholder="Tu familia, La empresa XYZ..."></div>
-      </div>
-    </div>
-
-    <!-- 3. COLOR DE TARJETA -->
-    <div id="bloque-tarjeta-pesame" style="display:none;">
       <hr class="divider">
       <div class="subsection-title">Color de tarjeta preimpresa</div>
       <div class="tarjeta-grid">
@@ -1609,7 +1601,15 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
     </div>
 
-    <div id="bloque-tarjeta-general" style="display:none;">
+    <!-- TODA OCASIÓN (Cumpleaños, Bebé, Amor, etc.) -->
+    <div id="bloque-general" style="display:none;">
+      <hr class="divider">
+      <div class="grid-2">
+        <div class="field"><label>Para quién va dirigido <span class="req">*</span></label>
+          <input type="text" id="p_dirigido_gen" placeholder="María, el equipo de ventas..."></div>
+        <div class="field"><label>Quién hace la atención</label>
+          <input type="text" id="p_quien_gen" placeholder="Tu familia, La empresa XYZ..."></div>
+      </div>
       <hr class="divider">
       <div class="subsection-title">Color de tarjeta preimpresa</div>
       <div class="tarjeta-grid">
@@ -1627,9 +1627,18 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       </div>
     </div>
+
+    <!-- DONACIÓN (sin campos adicionales ni tarjeta) -->
+    <div id="bloque-donacion" style="display:none;">
+      <hr class="divider">
+      <div style="background:var(--pink-lt);border-radius:10px;padding:16px 20px;font-size:.88rem;color:var(--ink-mid);">
+        ❤ Gracias por tu donación. No se requiere información adicional de tarjeta ni entrega física.
+      </div>
+    </div>
+
     <input type="hidden" id="p_tarjeta">
 
-    <!-- 4. NOTAS -->
+    <!-- NOTAS (aparece para todos excepto donación) -->
     <div id="bloque-notas" style="display:none;margin-top:20px;">
       <hr class="divider">
       <div class="subsection-title">📝 Notas adicionales al pedido</div>
